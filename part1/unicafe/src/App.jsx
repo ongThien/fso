@@ -1,8 +1,21 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-const Button = ({handleClick, text}) => {
-  return <button onClick={handleClick}>{text}</button>
-}
+const Button = ({ handleClick, text }) => {
+  return <button onClick={handleClick}>{text}</button>;
+};
+
+const Statistics = ({ good, neutral, bad, all, avg, positive }) => {
+  return (
+    <>
+      <p>Good {good}</p>
+      <p>Neutral {neutral}</p>
+      <p>Bad {bad}</p>
+      <p>All {all}</p>
+      <p>Average {avg}</p>
+      <p>Positive {positive}%</p>
+    </>
+  );
+};
 
 const App = () => {
   const [good, setGood] = useState(0);
@@ -16,12 +29,12 @@ const App = () => {
     const tmpGood = good + 1;
     setGood(tmpGood);
     const tmpAll = tmpGood + neutral + bad;
-    setAll(tmpAll)
+    setAll(tmpAll);
     const tmpAvg = (tmpGood + bad * -1) / tmpAll;
     setAvg(tmpAvg);
-    const tmpPositive = tmpGood / tmpAll * 100;
+    const tmpPositive = (tmpGood / tmpAll) * 100;
     setPositive(tmpPositive);
-  }
+  };
 
   const handleClickNeutral = () => {
     const tmpNeutral = neutral + 1;
@@ -32,7 +45,7 @@ const App = () => {
     setAvg(tmpAvg);
     const tmpPositive = (good / tmpAll) * 100;
     setPositive(tmpPositive);
-  }
+  };
 
   const handleClickBad = () => {
     const tmpBad = bad + 1;
@@ -43,7 +56,7 @@ const App = () => {
     setAvg(tmpAvg);
     const tmpPositive = (good / tmpAll) * 100;
     setPositive(tmpPositive);
-  }
+  };
 
   return (
     <>
@@ -53,14 +66,16 @@ const App = () => {
       <Button handleClick={handleClickBad} text={"Bad"}></Button>
 
       <h2>statistics</h2>
-      <p>Good {good}</p>
-      <p>Neutral {neutral}</p>
-      <p>Bad {bad}</p>
-      <p>All {all}</p>
-      <p>Average {avg}</p>
-      <p>Positive {positive}%</p>
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        all={all}
+        avg={avg}
+        positive={positive}
+      ></Statistics>
     </>
   );
-}
+};
 
-export default App
+export default App;
