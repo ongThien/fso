@@ -24,15 +24,17 @@ The FullStackOpen course is divided into several parts, each focusing on differe
 The repository is organized into different directories, each corresponding to a specific part or module of the course. Here's an overview of the directory structure:
 ```
 ├── part0
-│   ├── 1-HTML
-│   ├── 2-CSS
-│   ├── 3-HTML-forms
-│   ├── 4-New-note-diagram
-│   ├── 5-SPA-diagram
-│   └── 6-New-note-in-SPA-diagram
+│   ├── 1-HTML
+│   ├── 2-CSS
+│   ├── 3-HTML-forms
+│   ├── 4-New-note-diagram
+│   ├── 5-SPA-diagram
+│   └── 6-New-note-in-SPA-diagram
 ├── part1
-│   └── courseinfo
-
+│   ├── anecdotes
+│   ├── courseinfo
+│   └── unicafe
+└── README.md
 ```
 
 Each part directory contains the relevant exercises, projects, and their corresponding solutions. This course currently contains 14 parts, so this repository will be updated according to my progess on the course.
