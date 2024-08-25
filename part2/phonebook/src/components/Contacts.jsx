@@ -1,15 +1,20 @@
-const Contact = ({ name, phoneNum }) => (
+const Contact = ({ name, phoneNum, handleDelete }) => (
   <p>
-    {name} {phoneNum}
+    {name} {phoneNum} <button onClick={handleDelete}>delete</button>
   </p>
 );
 
-const Contacts = ({ contacts }) => {
+const Contacts = ({ contacts, handleDelete }) => {
   return (
     <>
       <h2>Numbers</h2>
       {contacts.map((contact) => (
-        <Contact key={contact.id} name={contact.name} phoneNum={contact.number} />
+        <Contact
+          key={contact.id}
+          name={contact.name}
+          phoneNum={contact.number}
+          handleDelete={() => handleDelete(contact)}
+        />
       ))}
     </>
   );

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import NewContact from "./components/NewContact";
 import Contacts from "./components/Contacts";
 import Filter from "./components/Filter";
+import personService from "./services/personService";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,12 +11,8 @@ const App = () => {
   const [filteredPersons, setFilteredPersons] = useState([]);
   const [showAll, setShowAll] = useState(true);
 
-  const dbUrl = "http://localhost:3001/persons";
   useEffect(() => {
-    axios.get(dbUrl).then((res) => {
-      // console.log(res);
-      setPersons(res.data);
-    });
+    personService.getAll().then((initPersons) => setPersons(initPersons));
   }, []);
 
   const handleAddName = (event) => {
@@ -24,15 +20,17 @@ const App = () => {
     if (persons.find((p) => p.name === newName)) {
       return alert(`${newName} is already added to phonebook`);
     }
-    setPersons(
-      persons.concat({
+
+    personService
+      .create({
         name: newName,
         number: phoneNum,
-        id: persons.length + 1,
       })
-    );
-    setNewName("");
-    setPhoneNum("");
+      .then((person) => {
+        setPersons(persons.concat(person));
+        setNewName("");
+        setPhoneNum("");
+      });
   };
 
   const handleNameChange = (event) => {
@@ -56,6 +54,15 @@ const App = () => {
     }
   };
 
+  const handleDeletePerson = person => {
+    if (window.confirm(`Remove ${person.name}?`)) {
+      personService.deleteById(person.id).then(() => {
+        setPersons(persons.filter(p => p.id !== person.id))
+        personService.getAll().then((initPersons) => setPersons(initPersons));
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -69,7 +76,10 @@ const App = () => {
         handleNumChange={handleNumChange}
       />
 
-      <Contacts contacts={showAll ? persons : filteredPersons} />
+      <Contacts
+        contacts={showAll ? persons : filteredPersons}
+        handleDelete={handleDeletePerson}
+      />
     </div>
   );
 };
