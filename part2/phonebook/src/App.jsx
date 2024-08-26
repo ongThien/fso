@@ -12,25 +12,50 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    personService.getAll().then((initPersons) => setPersons(initPersons));
+    personService
+      .getAll()
+      .then((initPersons) => setPersons(initPersons))
+      .catch((err) => console.log(err));
   }, []);
 
-  const handleAddName = (event) => {
+  const handleAddContact = (event) => {
     event.preventDefault();
-    if (persons.find((p) => p.name === newName)) {
-      return alert(`${newName} is already added to phonebook`);
-    }
+    // if a number is added to an already existing user
+    // the new number will replace the old number
+    const personExist = persons.find((p) => p.name === newName);
+    const msg =
+      "is already added to phonebook, replace old number with a new one?";
 
-    personService
-      .create({
-        name: newName,
-        number: phoneNum,
-      })
-      .then((person) => {
-        setPersons(persons.concat(person));
-        setNewName("");
-        setPhoneNum("");
-      });
+    if (personExist) {
+      const { id, name } = personExist;
+      const modifiedPerson = { id, name, number: phoneNum };
+      if (window.confirm(`${name} ${msg}`)) {
+        personService
+          .updateById(id, modifiedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setPhoneNum("");
+          })
+          .catch((err) => console.log(err));
+      }
+    } else {
+      personService
+        .create({
+          name: newName,
+          number: phoneNum,
+        })
+        .then((person) => {
+          setPersons(persons.concat(person));
+          setNewName("");
+          setPhoneNum("");
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   const handleNameChange = (event) => {
@@ -54,14 +79,17 @@ const App = () => {
     }
   };
 
-  const handleDeletePerson = person => {
-    if (window.confirm(`Remove ${person.name}?`)) {
-      personService.deleteById(person.id).then(() => {
-        setPersons(persons.filter(p => p.id !== person.id))
-        personService.getAll().then((initPersons) => setPersons(initPersons));
-      })
+  const handleDelete = ({ id, name }) => {
+    if (window.confirm(`Remove ${name}?`)) {
+      personService
+        .deleteById(id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== id));
+          personService.getAll().then((initPersons) => setPersons(initPersons));
+        })
+        .catch((err) => console.log(err));
     }
-  }
+  };
 
   return (
     <div>
@@ -69,7 +97,7 @@ const App = () => {
       <Filter filter={handleFilter} />
 
       <NewContact
-        addName={handleAddName}
+        addContact={handleAddContact}
         newName={newName}
         handleNameChange={handleNameChange}
         phoneNum={phoneNum}
@@ -78,7 +106,7 @@ const App = () => {
 
       <Contacts
         contacts={showAll ? persons : filteredPersons}
-        handleDelete={handleDeletePerson}
+        handleDelete={handleDelete}
       />
     </div>
   );
