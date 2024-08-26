@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import NewContact from "./components/NewContact";
 import Contacts from "./components/Contacts";
 import Filter from "./components/Filter";
+import Notification from "./components/Notification";
 import personService from "./services/personService";
 
 const App = () => {
@@ -11,11 +12,16 @@ const App = () => {
   const [filteredPersons, setFilteredPersons] = useState([]);
   const [showAll, setShowAll] = useState(true);
 
+  const defaultMsg = { content: "", isErr: false };
+  const [message, setMessage] = useState(defaultMsg);
+
   useEffect(() => {
     personService
       .getAll()
       .then((initPersons) => setPersons(initPersons))
-      .catch((err) => console.log(err));
+      .catch(() => {
+        setMessage({ content: "Could not fetch data...", isErr: true });
+      });
   }, []);
 
   const handleAddContact = (event) => {
@@ -40,8 +46,21 @@ const App = () => {
             );
             setNewName("");
             setPhoneNum("");
+            setMessage({
+              content: `${name}'s phone number updated!`,
+              isErr: false,
+            });
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.log(err);
+            setMessage({
+              content: `Information of ${name} has already been removed from server.`,
+              isErr: true,
+            });
+            personService
+              .getAll()
+              .then((initPersons) => setPersons(initPersons));
+          });
       }
     } else {
       personService
@@ -53,9 +72,22 @@ const App = () => {
           setPersons(persons.concat(person));
           setNewName("");
           setPhoneNum("");
+          setMessage({
+            content: `Added ${person.name}!`,
+            isErr: false,
+          });
         })
-        .catch((err) => console.log(err));
+        .catch(() => {
+          setMessage({
+            content: `Could not create new contact...`,
+            isErr: true,
+          });
+        });
     }
+
+    setTimeout(() => {
+      setMessage(defaultMsg);
+    }, 5000);
   };
 
   const handleNameChange = (event) => {
@@ -86,14 +118,28 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter((p) => p.id !== id));
           personService.getAll().then((initPersons) => setPersons(initPersons));
+          setMessage({
+            content: `${name} was deleted from contact list!`,
+            isErr: false,
+          });
         })
-        .catch((err) => console.log(err));
+        .catch(
+          setMessage({
+            content: `Could not delete contact...`,
+            isErr: true,
+          })
+        );
     }
+    setTimeout(() => {
+      setMessage(defaultMsg);
+    }, 5000);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
+
       <Filter filter={handleFilter} />
 
       <NewContact
