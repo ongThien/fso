@@ -29,13 +29,14 @@ const App = () => {
     // if a number is added to an already existing user
     // the new number will replace the old number
     const personExist = persons.find((p) => p.name === newName);
-    const msg =
-      "is already added to phonebook, replace old number with a new one?";
 
     if (personExist) {
       const { id, name } = personExist;
       const modifiedPerson = { id, name, number: phoneNum };
-      if (window.confirm(`${name} ${msg}`)) {
+
+      const confirmMsg =
+        "is already added to phonebook, replace old number with a new one?";
+      if (window.confirm(`${name} ${confirmMsg}`)) {
         personService
           .updateById(id, modifiedPerson)
           .then((returnedPerson) => {
