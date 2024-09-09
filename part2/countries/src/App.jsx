@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import FindCountries from "./components/FindCountries";
-import RenderCountries from "./components/RenderCountries";
+import Countries from "./components/Countries";
 import countryService from "./services/countryService";
+import Country from "./components/Country";
 
 function App() {
-  const [allCountries, setAllCountries] = useState([]);
+  const [allCountries, setAllCountries] = useState(null);
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState(null);
 
   useEffect(() => {
     countryService
@@ -25,17 +27,29 @@ function App() {
     } else {
       setCountries([]);
     }
+
+    setCountry(null);
   };
 
-  if (allCountries.length === 0) {
+  const handleShowCountry = (countryName) => {
+    countryService
+      .getCountryByName(countryName)
+      .then((country) => setCountry(country))
+      .catch((err) => console.log(err));
+  };
+
+  if (!allCountries) {
     return <p>Fetching countries...</p>;
   }
-
+  
   return (
     <>
       <FindCountries findCountries={handleFindCountries} />
-
-      <RenderCountries countries={countries} />
+      {!country ? (
+        <Countries countries={countries} showCountry={handleShowCountry} />
+      ) : (
+        <Country country={country} />
+      )}
     </>
   );
 }
