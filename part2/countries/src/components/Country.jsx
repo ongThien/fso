@@ -1,28 +1,33 @@
 const Country = ({ country, weather }) => {
-  const { name, capital, area, languages, flags } = country;
+  const name = country.name.common;
+  const capital = country.capital[0];
+  const area = country.area;
+  const languages = Object.values(country.languages);
+  const flagURL = country.flags.png;
+
+  const temperature = weather.main.temp;
+  const feels_like = weather.main.feels_like;
+  const weatherIconURL = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`;
+  const windSpeed = weather.wind.speed;
 
   return (
     <>
-      <h2>{name.common}</h2>
+      <h2>{name}</h2>
       <p>capital: {capital}</p>
       <p>area: {area}</p>
       <h4>languages:</h4>
       <ul>
-        {Object.values(languages).map((lang) => (
+        {languages.map((lang) => (
           <li key={lang}>{lang}</li>
         ))}
       </ul>
-      <img src={flags.png} alt={flags.alt} />
+      <img src={flagURL} />
       <h3>Weather in {capital}</h3>
       <p>
-        temperature {weather.main.temp} Celsius (feels like{" "}
-        {weather.main.feels_like} Celsius)
+        temperature {temperature} Celsius (feels like {feels_like} Celsius)
       </p>
-      <img
-        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-        alt={`${weather.weather[0].description}`}
-      />
-      <p>wind {weather.wind.speed} m/s</p>
+      <img src={weatherIconURL} />
+      <p>wind {windSpeed} m/s</p>
     </>
   );
 };
