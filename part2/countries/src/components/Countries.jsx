@@ -1,5 +1,5 @@
 const Countries = ({ countries, showCountry }) => {
-  console.log(countries);
+  
   if (countries.length === 0) {
     return null;
   }
@@ -14,14 +14,14 @@ const Countries = ({ countries, showCountry }) => {
         {countries.map((c) => (
           <p key={c.name.common}>
             {`${c.name.common} `}
-            <button onClick={() => showCountry(c.name.common)}>show</button>
+            <button onClick={() => showCountry(c.name.common, c.capital[0])}>show</button>
           </p>
         ))}
       </>
     );
   }
   
-  return showCountry(countries[0].name.common);
+  return showCountry(countries[0].name.common, countries[0].capital[0]);
 };
 
 export default Countries;
