@@ -32,7 +32,7 @@ const App = () => {
 
     if (personExist) {
       const { id, name } = personExist;
-      const modifiedPerson = { id, name, number: phoneNum };
+      const modifiedPerson = { name: name, number: phoneNum };
 
       const confirmMsg =
         "is already added to phonebook, replace old number with a new one?";
