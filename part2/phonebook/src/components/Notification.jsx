@@ -1,6 +1,4 @@
 const Notification = ({ message }) => {
-  console.log("content: ", message.content);
-  
 
   if (!message.content) {
     return <></>;

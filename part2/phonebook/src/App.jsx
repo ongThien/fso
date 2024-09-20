@@ -100,10 +100,12 @@ const App = () => {
   };
 
   const handleFilter = (event) => {
-    const search = event.target.value;
-    if (search) {
+    const searchName = event.target.value;
+    if (searchName) {
       setFilteredPersons(
-        persons.filter((person) => person.name.toLowerCase().includes(search))
+        persons.filter((person) =>
+          person.name.toLowerCase().includes(searchName.toLowerCase())
+        )
       );
       setShowAll(false);
     } else {
@@ -117,8 +119,16 @@ const App = () => {
       personService
         .deleteById(id)
         .then(() => {
-          setPersons(persons.filter((p) => p.id !== id));
-          personService.getAll().then((initPersons) => setPersons(initPersons));
+          if (filteredPersons.length > 0) {
+            setFilteredPersons(filteredPersons.filter((p) => p.id !== id));
+          }
+          // setPersons(persons.filter((p) => p.id !== id));
+          personService
+            .getAll()
+            .then((initPersons) => setPersons(initPersons))
+            .catch(() => {
+              setMessage({ content: "Could not fetch data...", isErr: true });
+            });
           setMessage({
             content: `${name} was deleted from contact list!`,
             isErr: false,
