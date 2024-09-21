@@ -1,12 +1,12 @@
 const NewContact = (props) => {
-  const {addContact, newName, handleNameChange, phoneNum, handleNumChange} = props;
+  const {addContact, name, handleNameChange, phoneNum, handleNumChange} = props;
 
   return (
     <>
-      <h2>add a new</h2>
+      <h2>add a new contact</h2>
       <form onSubmit={addContact}>
         <div>
-          name: <input value={newName} onChange={handleNameChange} />
+          name: <input value={name} onChange={handleNameChange} />
         </div>
         <div>
           number: <input value={phoneNum} onChange={handleNumChange} />

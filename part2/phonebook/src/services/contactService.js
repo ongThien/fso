@@ -1,19 +1,19 @@
 import axios from "axios";
 
-const baseUrl = "/api/persons";
+const baseUrl = "/api/contacts";
 
 const getAll = () => {
   const req = axios.get(baseUrl);
   return req.then((res) => res.data);
 };
 
-const create = (person) => {
-  const req = axios.post(baseUrl, person);
+const create = (contact) => {
+  const req = axios.post(baseUrl, contact);
   return req.then((res) => res.data);
 };
 
-const updateById = (id, person) => {
-  const req = axios.put(`${baseUrl}/${id}`, person);
+const updateById = (id, contact) => {
+  const req = axios.put(`${baseUrl}/${id}`, contact);
   return req.then((res) => res.data);
 }
 

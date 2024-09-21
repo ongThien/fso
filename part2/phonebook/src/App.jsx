@@ -3,22 +3,22 @@ import NewContact from "./components/NewContact";
 import Contacts from "./components/Contacts";
 import Filter from "./components/Filter";
 import Notification from "./components/Notification";
-import personService from "./services/personService";
+import contactService from "./services/contactService";
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [name, setName] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
-  const [filteredPersons, setFilteredPersons] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
   const [showAll, setShowAll] = useState(true);
 
   const defaultMsg = { content: "", isErr: false };
   const [message, setMessage] = useState(defaultMsg);
 
   useEffect(() => {
-    personService
+    contactService
       .getAll()
-      .then((initPersons) => setPersons(initPersons))
+      .then((initContacts) => setContacts(initContacts))
       .catch((err) => {
         console.log(err.response.data.error);
         setMessage({ content: err.response.data.error, isErr: true });
@@ -29,24 +29,24 @@ const App = () => {
     event.preventDefault();
     // if a number is added to an already existing user
     // the new number will replace the old number
-    const personExist = persons.find((p) => p.name === newName);
+    const contact = contacts.find((p) => p.name === name);
 
-    if (personExist) {
-      const { id, name } = personExist;
-      const modifiedPerson = { name: name, number: phoneNum };
+    if (contact) {
+      const { id, name } = contact;
+      const modifiedContact = { name: name, number: phoneNum };
 
       const confirmMsg =
         "is already added to phonebook, replace old number with a new one?";
       if (window.confirm(`${name} ${confirmMsg}`)) {
-        personService
-          .updateById(id, modifiedPerson)
-          .then((returnedPerson) => {
-            setPersons(
-              persons.map((person) =>
-                person.id !== id ? person : returnedPerson
+        contactService
+          .updateById(id, modifiedContact)
+          .then((updatedContact) => {
+            setContacts(
+              contacts.map((contact) =>
+                contact.id !== id ? contact : updatedContact
               )
             );
-            setNewName("");
+            setName("");
             setPhoneNum("");
             setMessage({
               content: `${name}'s phone number updated!`,
@@ -59,23 +59,20 @@ const App = () => {
               content: err.response.data.error,
               isErr: true,
             });
-            // personService
-            //   .getAll()
-            //   .then((initPersons) => setPersons(initPersons));
           });
       }
     } else {
-      personService
+      contactService
         .create({
-          name: newName,
+          name: name,
           number: phoneNum,
         })
-        .then((person) => {
-          setPersons(persons.concat(person));
-          setNewName("");
+        .then((contact) => {
+          setContacts(contacts.concat(contact));
+          setName("");
           setPhoneNum("");
           setMessage({
-            content: `Added ${person.name}!`,
+            content: `Added ${contact.name}!`,
             isErr: false,
           });
         })
@@ -93,42 +90,42 @@ const App = () => {
   };
 
   const handleNameChange = (event) => {
-    setNewName(event.target.value);
+    setName(event.target.value);
   };
 
   const handleNumChange = (event) => {
     setPhoneNum(event.target.value);
   };
 
-  const handleFilter = (event) => {
+  const handleFilterContact = (event) => {
     const searchName = event.target.value;
     if (searchName) {
-      setFilteredPersons(
-        persons.filter((person) =>
-          person.name.toLowerCase().includes(searchName.toLowerCase())
+      setFilteredContacts(
+        contacts.filter((contact) =>
+          contact.name.toLowerCase().includes(searchName.toLowerCase())
         )
       );
       setShowAll(false);
     } else {
-      setFilteredPersons([]);
+      setFilteredContacts([]);
       setShowAll(true);
     }
   };
 
-  const handleDelete = ({ id, name }) => {
+  const handleDeleteContact = ({ id, name }) => {
     if (window.confirm(`Remove ${name}?`)) {
-      personService
+      contactService
         .deleteById(id)
         .then(() => {
-          if (filteredPersons.length > 0) {
-            setFilteredPersons(filteredPersons.filter((p) => p.id !== id));
+          if (filteredContacts.length > 0) {
+            setFilteredContacts(filteredContacts.filter((c) => c.id !== id));
           }
-          personService
-            .getAll()
-            .then((initPersons) => setPersons(initPersons))
-            .catch((err) => {
-              setMessage({ content: err.response.data.error, isErr: true });
-            });
+          // contactService
+          //   .getAll()
+          //   .then((initContacts) => setContacts(initContacts))
+          //   .catch((err) => {
+          //     setMessage({ content: err.response.data.error, isErr: true });
+          //   });
           setMessage({
             content: `${name} was deleted from contact list!`,
             isErr: false,
@@ -148,19 +145,19 @@ const App = () => {
       <h2>Phonebook</h2>
       <Notification message={message} />
 
-      <Filter filter={handleFilter} />
+      <Filter filter={handleFilterContact} />
 
       <NewContact
         addContact={handleAddContact}
-        newName={newName}
+        name={name}
         handleNameChange={handleNameChange}
         phoneNum={phoneNum}
         handleNumChange={handleNumChange}
       />
 
       <Contacts
-        contacts={showAll ? persons : filteredPersons}
-        handleDelete={handleDelete}
+        contacts={showAll ? contacts : filteredContacts}
+        handleDelete={handleDeleteContact}
       />
     </div>
   );
