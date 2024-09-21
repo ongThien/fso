@@ -19,8 +19,9 @@ const App = () => {
     personService
       .getAll()
       .then((initPersons) => setPersons(initPersons))
-      .catch(() => {
-        setMessage({ content: "Could not fetch data...", isErr: true });
+      .catch((err) => {
+        console.log(err.response.data.error);
+        setMessage({ content: err.response.data.error, isErr: true });
       });
   }, []);
 
@@ -53,14 +54,14 @@ const App = () => {
             });
           })
           .catch((err) => {
-            console.log(err);
+            console.log(err.response.data.error);
             setMessage({
-              content: `Information of ${name} has already been removed from server.`,
+              content: err.response.data.error,
               isErr: true,
             });
-            personService
-              .getAll()
-              .then((initPersons) => setPersons(initPersons));
+            // personService
+            //   .getAll()
+            //   .then((initPersons) => setPersons(initPersons));
           });
       }
     } else {
@@ -78,9 +79,9 @@ const App = () => {
             isErr: false,
           });
         })
-        .catch(() => {
+        .catch((err) => {
           setMessage({
-            content: `Could not create new contact...`,
+            content: err.response.data.error,
             isErr: true,
           });
         });
@@ -122,24 +123,20 @@ const App = () => {
           if (filteredPersons.length > 0) {
             setFilteredPersons(filteredPersons.filter((p) => p.id !== id));
           }
-          // setPersons(persons.filter((p) => p.id !== id));
           personService
             .getAll()
             .then((initPersons) => setPersons(initPersons))
-            .catch(() => {
-              setMessage({ content: "Could not fetch data...", isErr: true });
+            .catch((err) => {
+              setMessage({ content: err.response.data.error, isErr: true });
             });
           setMessage({
             content: `${name} was deleted from contact list!`,
             isErr: false,
           });
         })
-        .catch(
-          setMessage({
-            content: `Could not delete contact...`,
-            isErr: true,
-          })
-        );
+        .catch((err) => {
+          setMessage({ content: err.response.data.error, isErr: true });
+        });
     }
     setTimeout(() => {
       setMessage(defaultMsg);
