@@ -2,42 +2,53 @@ const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const logger = require("../utils/logger");
 
-blogsRouter.get("/", (req, res, next) => {
-  Blog.find({})
-    .then((blogs) => res.status(200).json(blogs))
-    .catch((err) => next(err));
+blogsRouter.get("/", async (req, res) => {
+  const blogs = await Blog.find({});
+  res.status(200).json(blogs);
 });
 
-blogsRouter.get("/:id", (req, res, next) => {
-  Blog.find(req.params.id)
-    .then((blog) =>
-      blog ? res.status(200).json(blog) : res.status(404).end()
-    )
-    .catch((err) => next(err));
+blogsRouter.get("/:id", async (req, res) => {
+  const blog = await Blog.findById(req.params.id);
+  blog ? res.status(200).json(blog) : res.status(404).end();
 });
 
-blogsRouter.post("/", (req, res, next) => {
-  const blog = new Blog(req.body);
-
-  blog
-    .save()
-    .then((savedBlog) => res.status(201).json(savedBlog))
-    .catch((err) => next(err));
+blogsRouter.post("/", async (req, res) => {
+  logger.info("REQUEST BODY", req.body)
+  const { title, url, author, likes } = req.body;
+  const blog = {
+    title,
+    author,
+    url,
+    likes: likes ? likes : 0,
+  };
+  logger.info("received new POST request");
+  logger.info(blog);
+  const savedBlog = await new Blog(blog).save();
+  logger.info("saved!");
+  res.status(201).json(savedBlog);
 });
 
-blogsRouter.put("/:id", (req, res, next) => {
-  const blog = req.body;
+blogsRouter.put("/:id", async (req, res) => {
+  const { title, url, author, likes } = req.body;
+  const blog = {
+    title,
+    author,
+    url,
+    likes,
+  };
   const opts = { new: true };
-
-  Blog.findByIdAndUpdate(req.params.id, blog, opts)
-    .then((updatedBlog) => res.status(200).json(updatedBlog))
-    .catch((err) => next(err));
+  logger.info("received updating request on id", req.params.id);
+  const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, opts);
+  logger.info(blog);
+  logger.info("updated: ", updatedBlog);
+  res.status(200).json(updatedBlog);
 });
 
-blogsRouter.delete("/:id", (req, res, next) => {
-  Blog.findByIdAndDelete(req.params.id)
-    .then((result) => res.status(204).end())
-    .catch((err) => next(err));
+blogsRouter.delete("/:id", async (req, res) => {
+  logger.info("received DELETE request on id", req.params.id);
+  const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+  logger.info("deleted", deletedBlog);
+  res.status(204).end();
 });
 
 module.exports = blogsRouter;
