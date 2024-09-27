@@ -8,9 +8,11 @@ const morgan = require("morgan");
 const config = require("./utils/config");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
-require("express-async-errors");
+require("express-async-errors"); // this allows simplify try-catch block
 
 // import controllers
+const loginRouter = require("./controllers/login");
+const usersRouter = require("./controllers/users");
 const blogsRouter = require("./controllers/blogs");
 
 // connect to MongoDB
@@ -28,6 +30,8 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 
+app.use("/api/login", loginRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/blogs", blogsRouter);
 
 app.use(middleware.unknownEndpoint);

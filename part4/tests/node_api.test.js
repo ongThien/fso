@@ -1,66 +1,72 @@
 const { describe, it, after, beforeEach } = require("node:test");
 const assert = require("node:assert");
 const mongoose = require("mongoose");
-const supertest = require("supertest");
-const app = require("../app");
 const Blog = require("../models/blog");
-const api = supertest(app);
+const User = require("../models/user");
 const config = require("../utils/config");
 const helper = require("./testHelper");
+const logger = require("../utils/logger");
 
 mongoose.set("strictQuery", false);
 console.log("connecting to DB");
 mongoose.connect(config.MONGO_URI);
 console.log("connected");
 
-describe("when there are initially some blogs saved", () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    console.log("cleared previous data");
-    await Blog.insertMany(helper.initData);
-    console.log("data prepared!");
-  });
+describe("creating new user", () => {
+  const user = helper.defaultUser;
 
-  it("should return blogs as JSON", async () => {
+  it("should create new user with valid data", async () => {
+    const api = helper.createAPI();
     await api
-      .get("/api/blogs")
-      .expect(200)
+      .post("/api/users")
+      .send(user)
+      .expect(201)
       .expect("Content-Type", /application\/json/);
   });
 
-  it("should successfully fetch all blogs", async () => {
-    const response = await api.get("/api/blogs");
-    assert.deepStrictEqual(response.body.length, helper.initData.length);
+  it("should not create user with already taken username", async () => {
+    const api = helper.createAPI();
+    await api.post("/api/users").send(user).expect(400);
   });
 
-  it("should have a specific blog title within the fetched blogs", async () => {
-    const blog = await helper.getABlogInDB();
-    const response = await api.get("/api/blogs");
-    const titles = response.body.map((blog) => blog.title);
-    assert(titles.includes(blog.title));
+  it("should return a jwt in response body when user log in", async () => {
+    const api = helper.createAPI();
+    const res = await api
+      .post("/api/login")
+      .set("Accept", "application/json")
+      .send(user)
+      .expect(200);
+    assert(res.body.token);
   });
 });
 
 describe("adding new blog", () => {
-  it("should success with valid data", async () => {
-    const newBlog = {
-      title: "Go To Statement Considered Harmful",
-      author: "Edsger W. Dijkstra",
-      url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-      likes: 5,
-    };
-
+  it("should success with valid data & token provided", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const newBlog = helper.newBlog;
+    const api = await helper.createAPIWithToken(helper.defaultUser);
     await api
       .post("/api/blogs")
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
-    const allBlogs = await helper.getAllBlogsInDB();
-    assert.strictEqual(allBlogs.length, helper.initData.length + 1);
+    const allBlogsAfter = await helper.getAllBlogsInDB();
+    assert.strictEqual(allBlogsAfter.length, allBlogsBefore.length + 1);
 
-    const allTitles = allBlogs.map((b) => b.title);
+    const allTitles = allBlogsAfter.map((b) => b.title);
     assert(allTitles.includes(newBlog.title));
+  });
+
+  it("should fail with status code 401 if token is not provided", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const newBlog = helper.newBlog;
+
+    const api = helper.createAPI();
+    await api.post("/api/blogs").send(newBlog).expect(401);
+
+    const allBlogsAfter = await helper.getAllBlogsInDB();
+    assert.strictEqual(allBlogsBefore.length, allBlogsAfter.length);
   });
 
   it("should fail with status code 400 if data is not valid", async () => {
@@ -69,6 +75,7 @@ describe("adding new blog", () => {
       title: "Go To Statement Considered Harmful",
     };
 
+    const api = await helper.createAPIWithToken(helper.defaultUser);
     await api.post("/api/blogs").send(invalidData).expect(400);
 
     const allBlogsAfter = await helper.getAllBlogsInDB();
@@ -76,34 +83,67 @@ describe("adding new blog", () => {
   });
 });
 
-describe("viewing a specific blog", () => {
-  it("should return the blog with the correspond id", async () => {
-    const expected = await helper.getABlogInDB();
+describe("viewing blogs", () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    await helper.createSamples();
+    console.log("CREATED DATA SAMPLES");
+  });
 
+  it("should return the blog with the correspond id", async () => {
+    const allBlogs = await helper.getAllBlogsInDB();
+    const blog = helper.getABlog(allBlogs);
+    const api = helper.createAPI();
     const response = await api
-      .get(`/api/blogs/${expected.id}`)
+      .get(`/api/blogs/${blog.id}`)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    assert.deepStrictEqual(response.body, expected);
+    const expected = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes,
+    };
+
+    const result = {
+      title: response.body.title,
+      author: response.body.author,
+      url: response.body.url,
+      likes: response.body.likes,
+    };
+    
+    assert.deepStrictEqual(result, expected);
   });
 
   it("should fail with status code 404 if id does not exist", async () => {
     const invalidId = await helper.getNonExistingId();
+
+    const api = helper.createAPI();
     await api.get(`/api/blogs/${invalidId}`).expect(404);
   });
 
   it("should fail with status code 400 if id is not valid", async () => {
     const invalidId = "hehehe";
+
+    const api = helper.createAPI();
     await api.get(`/api/blogs/${invalidId}`).expect(400);
   });
 });
 
 describe("deleting a blog", () => {
-  it("should delete the blog if id is valid", async () => {
-    const allBlogsBefore = await helper.getAllBlogsInDB();
-    const toBeDeleteBlog = helper.getRandomElement(allBlogsBefore);
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    await helper.createSamples();
+    console.log("CREATED DATA SAMPLES FOR DELETION!");
+  });
 
+  it("should delete the blog if id is valid with correct user who created it", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const user = await User.findOne({ username: helper.defaultUser.username });
+    const toBeDeleteBlog = helper.getBlogByUserId(allBlogsBefore, user.id);
+
+    const api = await helper.createAPIWithToken(helper.defaultUser);
     await api.delete(`/api/blogs/${toBeDeleteBlog.id}`).expect(204);
 
     const allBlogsAfter = await helper.getAllBlogsInDB();
@@ -112,113 +152,71 @@ describe("deleting a blog", () => {
     const titlesAfter = allBlogsAfter.map((b) => b.title);
     assert(!titlesAfter.includes(toBeDeleteBlog.title));
   });
+
+  it("should not delete the blog without the permission", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const toBeDeleteBlog = helper.getABlog(allBlogsBefore);
+
+    const user = {
+      username: "hehe",
+      password: "123",
+    };
+    await helper.createNewUserForTesting(user);
+
+    const api = await helper.createAPIWithToken(user);
+    await api.delete(`/api/blogs/${toBeDeleteBlog.id}`).expect(401);
+
+    const allBlogsAfter = await helper.getAllBlogsInDB();
+    assert.strictEqual(allBlogsAfter.length, allBlogsBefore.length);
+
+    const titlesAfter = allBlogsAfter.map((b) => b.title);
+    assert(titlesAfter.includes(toBeDeleteBlog.title));
+  });
 });
 
 describe("updating a blog", () => {
-  it("should update the blog if id is valid", async () => {
-    const blog = await helper.getABlogInDB();
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    await helper.createSamples();
+    console.log("CREATED DATA SAMPLES FOR UPDATING!");
+  });
 
+  it("should update the blog if id is valid with correct user who created it", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const user = await User.findOne({ username: helper.defaultUser.username });
+    const blog = helper.getBlogByUserId(allBlogsBefore, user.id);
     blog.likes = blog.likes + 1;
 
-    const response = await api
+    const api = await helper.createAPIWithToken(helper.defaultUser);
+    const res = await api
       .put(`/api/blogs/${blog.id}`)
       .send(blog)
       .expect(200)
       .expect("Content-Type", /application\/json/);
-    assert.strictEqual(response.body.likes, blog.likes);
+
+    assert.strictEqual(res.body.likes, blog.likes);
+  });
+
+  it("should not update the blog without permission", async () => {
+    const allBlogsBefore = await helper.getAllBlogsInDB();
+    const blog = helper.getABlog(allBlogsBefore);
+    blog.likes = blog.likes + 1;
+
+    const user = {
+      username: "hoho",
+      password: "123",
+    };
+    await helper.createNewUserForTesting(user);
+    const api = await helper.createAPIWithToken(user);
+    const res = await api.put(`/api/blogs/${blog.id}`).send(blog).expect(401);
   });
 });
 
-// beforeEach(async () => {
-//   await Blog.deleteMany({});
-//   console.log("cleared previous data");
-
-//   // for (let data of helper.initData) {
-//   //   await new Blog(data).save();
-//   // }
-
-//   const blogsObj = helper.initData.map((data) => new Blog(data));
-//   const promisedBlogs = blogsObj.map((b) => b.save());
-//   await Promise.all(promisedBlogs);
-//   console.log("data prepared!");
-// });
-
-// it("should return blogs list as json", async () => {
-//   await api
-//     .get("/api/blogs")
-//     .expect(200)
-//     .expect("Content-Type", /application\/json/);
-// });
-
-// it("should return all blogs in the DB", async () => {
-//   const res = await api.get("/api/blogs");
-//   assert.strictEqual(res.body.length, helper.initData.length);
-// });
-
-// it("should return a specific blog within the returned blogs", async () => {
-//   const res = await api.get("/api/blogs");
-//   const content = res.body.map((e) => e.title);
-//   assert(content.includes("Canonical string reduction"));
-// });
-
-// it("should add a valid blog successfully", async () => {
-//   const newBlog = {
-//     title: "Go To Statement Considered Harmful",
-//     author: "Edsger W. Dijkstra",
-//     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-//     likes: 5,
-//   };
-
-//   await api
-//     .post("/api/blogs")
-//     .send(newBlog)
-//     .expect(201)
-//     .expect("Content-Type", /application\/json/);
-
-//   const totalBlogs = await helper.getAllBlogsInDB();
-//   assert.strictEqual(totalBlogs.length, helper.initData.length + 1);
-
-//   const titles = totalBlogs.map((b) => b.title);
-//   assert(titles.includes("Go To Statement Considered Harmful"));
-// });
-
-// it("should not add an invalid blog", async () => {
-//   const newBlog = {
-//     likes: 5,
-//   };
-
-//   await api.post("/api/blogs").send(newBlog).expect(400);
-
-//   const totalBlogs = await helper.getAllBlogsInDB();
-//   assert.strictEqual(totalBlogs.length, helper.initData.length);
-// });
-
-// it("should return a blog by its id", async () => {
-//   const allBlogs = await helper.getAllBlogsInDB();
-//   const expectedBlog = allBlogs[0];
-//   // console.log("expect", expectedBlog);
-
-//   const result = await api
-//     .get(`/api/blogs/${expectedBlog.id}`)
-//     .expect(200)
-//     .expect("Content-Type", /application\/json/);
-//   assert.deepStrictEqual(result.body, expectedBlog);
-// });
-
-// it("should be able to delete a blog by its id", async () => {
-//   const allBlogs = await helper.getAllBlogsInDB();
-//   const toBeDeleted = allBlogs[0];
-
-//   await api.delete(`/api/blogs/${toBeDeleted.id}`).expect(204);
-
-//   const currentBlogs = await helper.getAllBlogsInDB();
-//   const currentTitles = currentBlogs.map((b) => b.title);
-
-//   assert(!currentTitles.includes(toBeDeleted.title));
-//   assert.strictEqual(currentBlogs.length, helper.initData.length - 1);
-// });
-
 after(async () => {
+  // clear out all data created by test
+  await User.deleteMany({});
+  await Blog.deleteMany({});
+  // remember to close connection
   await mongoose.connection.close();
   console.log("closed connection!");
 });

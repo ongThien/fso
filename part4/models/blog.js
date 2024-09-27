@@ -14,6 +14,10 @@ const blogSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
+  user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
 });
 
 blogSchema.set("toJSON", {
@@ -21,7 +25,9 @@ blogSchema.set("toJSON", {
     returnObj.id = returnObj._id.toString();
     delete returnObj._id;
     delete returnObj.__v;
-  }
-})
+  },
+});
 
-module.exports = mongoose.model("Blog", blogSchema);
+const Blog = mongoose.model("Blog", blogSchema);
+
+module.exports = Blog;
