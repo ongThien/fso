@@ -40,6 +40,7 @@ The repository is organized into different directories, each corresponding to a 
 │   └── phonebook
 ├── part3 Programming a server with NodeJS and Express
 ├── part4 Testing Express servers, user administration
+├── part5 Testing React apps
 └── README.md
 ```
 
