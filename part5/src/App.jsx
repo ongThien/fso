@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LogInForm";
 import BlogForm from "./components/BlogForm";
+import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const blogFormRef = useRef();
 
   // some utils variable and function
   const localStorageUserKey = "loggedBlogAppUser";
@@ -48,20 +45,21 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const login = async ({ username, password }) => {
+    if (!(username && password)) {
+      showMessage("username or password is missing", true);
+      return;
+    }
 
     try {
       const user = await loginService.login({
         username,
         password,
       });
-      
+
       window.localStorage.setItem(localStorageUserKey, JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
       showMessage(`Welcome back, ${user.username}`, false);
     } catch (exception) {
       showMessage("Wrong username or password", true);
@@ -75,22 +73,33 @@ const App = () => {
     showMessage("User logged out", false);
   };
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-
-    if (!(title && url)) {
+  const createBlog = async (blog) => {
+    if (!(blog.title && blog.url)) {
       showMessage("title & url required!", true);
       return;
     }
 
-    const blog = { title, author, url };
-    await blogService.create(blog);
-    setTitle("");
-    setAuthor("");
-    setUrl("");
-    setBlogs(blogs.concat(blog));
-    showMessage(`a new blog ${blog.title} by ${blog.author} added`, false);
+    try {
+      blogFormRef.current.toggleVisibility();
+      await blogService.create(blog);
+      setBlogs(blogs.concat(blog));
+      showMessage(`a new blog ${blog.title} by ${blog.author} added`, false);
+    } catch (exception) {
+      showMessage(`Could not add: ${blog.title} by ${blog.author}`, true);
+    }
   };
+
+  const blogForm = () => (
+    <Togglable btnLabel="new blog" ref={blogFormRef}>
+      <BlogForm createBlog={createBlog} />
+    </Togglable>
+  );
+
+  const loginForm = () => (
+    <Togglable btnLabel="login">
+      <LoginForm login={login} />
+    </Togglable>
+  );
 
   return (
     <div>
@@ -103,29 +112,15 @@ const App = () => {
           <p>
             {user.name} logged-in <button onClick={handleLogout}>logout</button>
           </p>
-          <BlogForm
-            addBlog={addBlog}
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-          />
-
-          {blogs.map((blog, id) => (
-            <Blog key={id} blog={blog} />
-          ))}
+          {blogForm()}
         </div>
       ) : (
-        <LoginForm
-          username={username}
-          setUsername={setUsername}
-          password={password}
-          setPassword={setPassword}
-          handleLogin={handleLogin}
-        />
+        loginForm()
       )}
+      <br/>
+      {blogs.map((blog, id) => (
+        <Blog key={id} blog={blog} />
+      ))}
     </div>
   );
 };
