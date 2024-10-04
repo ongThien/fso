@@ -31,7 +31,7 @@ const LikeBtn = () => {
 
   const likeBtnStyle = {
     ...btnStyle,
-    backgroundColor: hover ? "green" : "lightgreen",
+    backgroundColor: hover ? "blue" : "lightblue",
   };
 
   return (
@@ -50,7 +50,7 @@ const RemoveBtn = ({ handleOnClick }) => {
 
   const removeBtnStyle = {
     ...btnStyle,
-    backgroundColor: hover ? "green" : "lightgreen",
+    backgroundColor: hover ? "red" : "pink",
   };
 
   return (
