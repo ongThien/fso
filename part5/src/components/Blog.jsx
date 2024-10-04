@@ -20,7 +20,7 @@ const Detail = ({
   removeBlog,
 }) => {
   const { title, author, url, likes, user } = blog;
-  
+
   return (
     <>
       <Simple

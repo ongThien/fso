@@ -16,7 +16,7 @@ const create = async (newBlog) => {
   const config = {
     headers: { Authorization: token },
   };
-  
+
   const res = await axios.post(baseUrl, newBlog, config);
   return res.data;
 };
@@ -35,8 +35,8 @@ const remove = async (id) => {
   };
 
   const res = await axios.delete(`${baseUrl}/${id}`, config);
-  console.log("RESPONSE WHEN DELETE", res)
+  // console.log("RESPONSE WHEN DELETE", res);
   return res;
-}
+};
 
 export default { getAll, create, update, remove, setToken };
