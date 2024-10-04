@@ -54,27 +54,21 @@ blogsRouter.put(
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
 
     if (!decodedToken) {
-      return res.status(401).json({ error: "token invalid" });
-    }
-    const user = await User.findById(decodedToken.id);
-
-    const id = req.params.id;
-    logger.info("BLOGROUTER: RECEIVED UPDATE REQUEST WITH ID -", id);
-    const tobeUpdatedBlog = await Blog.findById(id);
-    if (tobeUpdatedBlog.user.toString() !== user.id) {
-      return res.status(401).json({ error: "not allowed!" });
+      return res.status(401).json({ error: "Must log in to like this blog." });
     }
 
-    const { title, url, author, likes } = req.body;
+    
+    const { id, title, url, author, likes } = req.body;
     const blog = {
       title,
       author,
       url,
-      likes,
+      likes
     };
     const opts = { new: true };
     const updatedBlog = await Blog.findByIdAndUpdate(id, blog, opts);
     logger.info("BLOGROUTER: UPDATED BLOG WITH ID - ", id);
+    const user = await User.findById(req.body.user.id);
     for (const blog of user.blogs) {
       if (blog.id === id) {
         blog = updatedBlog;

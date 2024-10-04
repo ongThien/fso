@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.headers.authorization?.split(" ")[1];
-  logger.info("EXTRACTED TOKEN:", authorization);
+  // logger.info("EXTRACTED TOKEN:", authorization);
   if (!authorization) {
     return res.status(401).json({ error: "Not allowed!" });
   }
@@ -13,17 +13,17 @@ const tokenExtractor = (req, res, next) => {
 };
 
 const userExtractor = async (req, res, next) => {
-  logger.info("DECODING TOKEN...", req.token);
+  // logger.info("DECODING TOKEN...", req.token);
   const decodedToken = jwt.verify(req.token, process.env.SECRET);
   if (!decodedToken) {
-    logger.info("No token found...")
+    // logger.info("No token found...")
     return res.status(401).json({ error: "No token found!"});
   }
   
-  logger.info("Extracting user....");
+  // logger.info("Extracting user....");
   const user = await User.findById(decodedToken.id);
   if (user) {
-    logger.info("FOUND user:", user);
+    // logger.info("FOUND user:", user);
     req.user = user;
   }
 
