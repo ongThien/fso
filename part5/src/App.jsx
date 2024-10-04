@@ -13,6 +13,7 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
   const blogFormRef = useRef();
+  // const blogLikesRef = useRef();
 
   // some utils variable and function
   const localStorageUserKey = "loggedBlogAppUser";
@@ -89,6 +90,48 @@ const App = () => {
     }
   };
 
+  const updateBlog = async (blog) => {
+    try {
+      // blogLikesRef.current.update();
+      await blogService.update(blog.id, blog);
+      setBlogs(blogs.map((b) => (b.id === blog.id ? blog : b)));
+      showMessage(`UPDATED ${blog.title} by ${blog.author}`, false);
+    } catch (exception) {
+      showMessage(exception.response.data.error, true);
+    }
+  };
+
+  const sortBlog = () => {
+    // sorting blogs by likes by descending order
+    const compareFnDes = (a, b) => {
+      if (a.likes === b.likes) {
+        return 0;
+      }
+
+      return a.likes > b.likes ? -1 : 1;
+    };
+
+    // sorting blogs by likes by ascending order
+    const compareFnAsc = (a, b) => {
+      if (a.likes === b.likes) {
+        return 0;
+      }
+
+      return a.likes > b.likes ? 1 : -1;
+    };
+
+    const sortAsc = () => setBlogs(blogs.map((b) => b).sort(compareFnAsc));
+    const sortDes = () => setBlogs(blogs.map((b) => b).sort(compareFnDes));
+
+    return (
+      <>
+        <button onClick={sortAsc}>Sort by likes - ascending</button>
+        {"  "}
+        <button onClick={sortDes}>Sort by likes - decending</button>
+      </>
+    );
+  };
+
   const blogForm = () => (
     <Togglable btnLabel="new blog" ref={blogFormRef}>
       <BlogForm createBlog={createBlog} />
@@ -101,9 +144,11 @@ const App = () => {
     </Togglable>
   );
 
+  const header = () => (user ? "blogs" : "log in to application");
+
   return (
     <div>
-      <h2>{user ? "blogs" : "log in to application"}</h2>
+      <h2>{header()}</h2>
 
       <Notification message={message} isError={isError} />
 
@@ -113,13 +158,14 @@ const App = () => {
             {user.name} logged-in <button onClick={handleLogout}>logout</button>
           </p>
           {blogForm()}
+          {sortBlog()}
         </div>
       ) : (
         loginForm()
       )}
-      <br/>
+      <br />
       {blogs.map((blog, id) => (
-        <Blog key={id} blog={blog} />
+        <Blog key={id} blog={blog} updateBlog={updateBlog} />
       ))}
     </div>
   );
