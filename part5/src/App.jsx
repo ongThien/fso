@@ -74,7 +74,7 @@ const App = () => {
     showMessage("User logged out", false);
   };
 
-  const createBlog = async (blog) => {
+  const handleCreateBlog = async (blog) => {
     if (!(blog.title && blog.url)) {
       showMessage("title & url required!", true);
       return;
@@ -90,7 +90,7 @@ const App = () => {
     }
   };
 
-  const updateBlog = async (blog) => {
+  const handleUpdateBlog = async (blog) => {
     try {
       // blogLikesRef.current.update();
       await blogService.update(blog.id, blog);
@@ -98,6 +98,19 @@ const App = () => {
       showMessage(`UPDATED ${blog.title} by ${blog.author}`, false);
     } catch (exception) {
       showMessage(exception.response.data.error, true);
+    }
+  };
+
+  const handleRemoveBlog = async (blog) => {
+    const { id, title, author } = blog;
+    if (window.confirm(`Remove blog ${title} by ${author}?`)) {
+      try {
+        await blogService.remove(id);
+        setBlogs(blogs.filter((b) => b.id !== id));
+        showMessage(`removed ${title} by ${author}`, false);
+      } catch (exception) {
+        showMessage(exception.response.data.error, true);
+      }
     }
   };
 
@@ -134,7 +147,7 @@ const App = () => {
 
   const blogForm = () => (
     <Togglable btnLabel="new blog" ref={blogFormRef}>
-      <BlogForm createBlog={createBlog} />
+      <BlogForm createBlog={handleCreateBlog} />
     </Togglable>
   );
 
@@ -165,7 +178,13 @@ const App = () => {
       )}
       <br />
       {blogs.map((blog, id) => (
-        <Blog key={id} blog={blog} updateBlog={updateBlog} />
+        <Blog
+          key={id}
+          currentUser={user}
+          blog={blog}
+          updateBlog={handleUpdateBlog}
+          removeBlog={handleRemoveBlog}
+        />
       ))}
     </div>
   );
