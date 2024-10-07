@@ -6,7 +6,7 @@ const tokenExtractor = (req, res, next) => {
   const authorization = req.headers.authorization?.split(" ")[1];
   // logger.info("EXTRACTED TOKEN:", authorization);
   if (!authorization) {
-    return res.status(401).json({ error: "Not allowed!" });
+    return res.status(401).json({ error: "Must logged in..." });
   }
   req.token = authorization;
   next();

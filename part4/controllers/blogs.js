@@ -56,7 +56,6 @@ blogsRouter.put(
     if (!decodedToken) {
       return res.status(401).json({ error: "Must log in to like this blog." });
     }
-
     const { id, title, url, author, likes } = req.body;
     const blog = {
       title,
@@ -67,7 +66,7 @@ blogsRouter.put(
     const opts = { new: true };
     const updatedBlog = await Blog.findByIdAndUpdate(id, blog, opts);
     logger.info("BLOGROUTER: UPDATED BLOG WITH ID - ", id);
-    const user = await User.findById(decodedToken.id);
+    const user = await User.findById(req.body.user.id);
     for (const blog of user.blogs) {
       if (blog.id === id) {
         blog = updatedBlog;
@@ -90,7 +89,7 @@ blogsRouter.delete(
     }
 
     const blogId = req.params.id;
-    logger.info("BLOGROUTER: RECEIVED DELETE REQUEST WITH ID", blogId);
+    // logger.info("BLOGROUTER: RECEIVED DELETE REQUEST WITH ID", blogId);
     const tobeDeletedBlog = await Blog.findById(blogId);
     const user = await User.findById(decodedToken.id);
     if (tobeDeletedBlog.user.toString() !== user.id) {
@@ -98,7 +97,7 @@ blogsRouter.delete(
     }
 
     await Blog.deleteOne(tobeDeletedBlog);
-    logger.info("DELETED BLOG: ", tobeDeletedBlog);
+    // logger.info("DELETED BLOG: ", tobeDeletedBlog);
     user.blogs = user.blogs.filter((blog) => blog.id !== tobeDeletedBlog.id);
     await user.save();
     res.status(204).end();
