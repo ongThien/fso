@@ -3,7 +3,7 @@ import { ViewBtn, LikeBtn, RemoveBtn } from "./BlogBtn";
 
 const Simple = ({ detail, toggleVisibility, title, author }) => {
   return (
-    <div>
+    <div className="simpleBlog">
       {title} {author ? `- ${author} ` : " "}
       <ViewBtn detail={detail} handleOnClick={toggleVisibility} />
     </div>
@@ -22,26 +22,26 @@ const Detail = ({
   const { title, author, url, likes, user } = blog;
 
   return (
-    <>
+    <div className="detailBlog">
       <Simple
         detail={detail}
         toggleVisibility={toggleVisibility}
         title={title}
         author={author}
       />
-      <div>{url}</div>
+      <div className="blogUrl">{url}</div>
       <div>
-        <form name="updateBlog" onSubmit={updateBlog}>
-          likes {likes} <LikeBtn />
+        <form name="updateBlog" onSubmit={updateBlog} className="updateBlogForm">
+          {likes > 1 ? "likes" : "like"} {likes} <LikeBtn />
         </form>
       </div>
       <div>{addedBy}</div>
-      {currentUser?.username === user.username ? (
-        <form name="removeBlog" onSubmit={removeBlog}>
+      {currentUser?.username === user?.username ? (
+        <form name="removeBlog" onSubmit={removeBlog} className="removeBlogForm">
           <RemoveBtn />
         </form>
       ) : null}
-    </>
+    </div>
   );
 };
 
@@ -49,6 +49,7 @@ const Blog = (props) => {
   // console.log("Blog", props.blog);
 
   const { id, title, author, url, user } = props.blog;
+  // console.log("PROPS.BLOG", props.blog);
   let likes = props.blog.likes;
   const updateBlog = props.updateBlog;
   const removeBlog = props.removeBlog;
@@ -84,7 +85,7 @@ const Blog = (props) => {
           toggleVisibility={toggleVisibility}
           blog={props.blog}
           currentUser={props.currentUser}
-          addedBy={user.name}
+          addedBy={user?.name}
           updateBlog={handleUpdate}
           removeBlog={handleRemove}
         />
