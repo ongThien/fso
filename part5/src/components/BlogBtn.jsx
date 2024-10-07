@@ -20,13 +20,14 @@ const ViewBtn = ({ detail, handleOnClick }) => {
       onMouseLeave={() => setHover(false)}
       onClick={handleOnClick}
       style={viewBtnStyle}
+      className={detail ? "hideBtn" : "viewBtn"}
     >
       {detail ? "hide" : "view"}
     </button>
   );
 };
 
-const LikeBtn = () => {
+const LikeBtn = ({ handleOnClick }) => {
   const [hover, setHover] = useState(false);
 
   const likeBtnStyle = {
@@ -39,6 +40,8 @@ const LikeBtn = () => {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={likeBtnStyle}
+      onClick={handleOnClick}
+      className="likeBtn"
     >
       like
     </button>
@@ -59,6 +62,7 @@ const RemoveBtn = ({ handleOnClick }) => {
       onMouseLeave={() => setHover(false)}
       onClick={handleOnClick}
       style={removeBtnStyle}
+      className="removeBtn"
     >
       remove
     </button>

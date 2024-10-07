@@ -21,7 +21,14 @@ const Notification = ({ message, isError }) => {
     borderColor: "red",
   };
 
-  return <div style={isError ? errorNoti : successNoti}>{message}</div>;
+  return (
+    <div
+      className={isError ? "error" : "success"}
+      style={isError ? errorNoti : successNoti}
+    >
+      {message}
+    </div>
+  );
 };
 
 export default Notification;
