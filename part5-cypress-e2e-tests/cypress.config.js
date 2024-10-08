@@ -10,4 +10,7 @@ module.exports = defineConfig({
       BACKEND: "http://localhost:4000/api",
     },
   },
+  hosts: {
+    "localhost": "127.0.0.1",
+  },
 });

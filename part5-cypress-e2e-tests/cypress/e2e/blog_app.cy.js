@@ -12,7 +12,9 @@ describe("blog app", () => {
 
   it("login form can be shown", () => {
     cy.contains("login").click();
-    cy.get(".loginForm").should("contain", "username").and("contain", "password");
+    cy.get(".loginForm")
+      .should("contain", "username")
+      .and("contain", "password");
   });
 
   describe("Login", () => {
@@ -44,6 +46,14 @@ describe("blog app", () => {
   describe("when logged in", () => {
     beforeEach(() => {
       cy.login({ username: "ongThien", password: "123" });
+    });
+
+    it("user can logout", () => {
+      cy.get(".logoutBtn").click();
+
+      cy.get("html")
+        .should("not.contain", "Thien Q. Nguyen logged-in")
+        .should("contain", "User logged out");
     });
 
     it("a new blog can be created", () => {
@@ -102,6 +112,18 @@ describe("blog app", () => {
         cy.get(".likeBtn").click();
         cy.get(".updateBlogForm").should("contain", 1);
         cy.get("html").should("contain", "UPDATED second blog by cypress");
+      });
+
+      it("the user who created a blog can delete it", () => {
+        cy.contains("third blog").parent().find("button").as("viewBtn");
+        cy.get("@viewBtn").click();
+
+        cy.get(".removeBtn").click();
+        cy.on("window:confirm", (confirmText) => {
+          expect(confirmText).to.equal("Remove blog third blog by cypress?");
+          return true;
+        });
+        cy.get("html").should("contain", "removed third blog by cypress");
       });
     });
   });
