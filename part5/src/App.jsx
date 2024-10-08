@@ -133,14 +133,18 @@ const App = () => {
       return a.likes > b.likes ? 1 : -1;
     };
 
-    const sortAsc = () => setBlogs(blogs.map((b) => b).sort(compareFnAsc));
-    const sortDes = () => setBlogs(blogs.map((b) => b).sort(compareFnDes));
+    const sortAsc = () => setBlogs([...blogs].sort(compareFnAsc));
+    const sortDes = () => setBlogs([...blogs].sort(compareFnDes));
 
     return (
       <>
-        <button onClick={sortAsc}>Sort by likes - ascending</button>
+        <button onClick={sortAsc} className="sortAscBtn">
+          Sort by likes - ascending
+        </button>
         {"  "}
-        <button onClick={sortDes}>Sort by likes - decending</button>
+        <button onClick={sortDes} className="sortDesBtn">
+          Sort by likes - descending
+        </button>
       </>
     );
   };
