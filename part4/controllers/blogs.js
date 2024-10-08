@@ -51,28 +51,19 @@ blogsRouter.put(
   middleware.tokenExtractor,
   middleware.userExtractor,
   async (req, res) => {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-
-    if (!decodedToken) {
-      return res.status(401).json({ error: "Must log in to like this blog." });
-    }
     const { id, title, url, author, likes } = req.body;
     const blog = {
       title,
       author,
       url,
-      likes
+      likes,
     };
     const opts = { new: true };
-    const updatedBlog = await Blog.findByIdAndUpdate(id, blog, opts);
+    const updatedBlog = await Blog.findByIdAndUpdate(id, blog, opts).populate(
+      "user",
+      { username: 1, name: 1 }
+    );
     logger.info("BLOGROUTER: UPDATED BLOG WITH ID - ", id);
-    const user = await User.findById(req.body.user.id);
-    for (const blog of user.blogs) {
-      if (blog.id === id) {
-        blog = updatedBlog;
-      }
-    }
-    await user.save();
     res.status(200).json(updatedBlog);
   }
 );
@@ -82,12 +73,6 @@ blogsRouter.delete(
   middleware.tokenExtractor,
   middleware.userExtractor,
   async (req, res) => {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-
-    if (!decodedToken) {
-      return res.status(401).json({ error: "token invalid" });
-    }
-
     const blogId = req.params.id;
     // logger.info("BLOGROUTER: RECEIVED DELETE REQUEST WITH ID", blogId);
     const tobeDeletedBlog = await Blog.findById(blogId);
