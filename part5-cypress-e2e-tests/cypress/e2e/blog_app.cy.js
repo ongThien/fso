@@ -125,6 +125,26 @@ describe("blog app", () => {
         });
         cy.get("html").should("contain", "removed third blog by cypress");
       });
+
+      it("only the user who created the blog can see the remove button", () => {
+        // log out user ongThien
+        cy.get(".logoutBtn").click();
+
+        // create new user
+        const user = {
+          username: "Katie",
+          name: "Ms. Katie",
+          password: "123",
+        };
+        cy.request("POST", `${Cypress.env("BACKEND")}/users`, user);
+        // log new user in
+        cy.login({ username: user.username, password: user.password });
+
+        // it should not show remove btn
+        cy.contains("first blog").parent().find("button").as("viewBtn");
+        cy.get("@viewBtn").click();
+        cy.get(".detailBlog").should("not.contain", "remove");
+      });
     });
   });
 });
