@@ -29,7 +29,17 @@ Anecdote.propTypes = {
 };
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) => state);
+  const anecdotesSelector = ({ anecdotes, filter }) => {
+    if (filter === "") {
+      return anecdotes;
+    }
+
+    return anecdotes.filter((anecdote) =>
+      anecdote.content.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
+
+  const anecdotes = useSelector(anecdotesSelector);
   const dispatch = useDispatch();
   const byVotes = (a, b) => b.votes - a.votes;
 
