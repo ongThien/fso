@@ -5,19 +5,26 @@ This repository contains my solutions and projects for the [FullStackOpen course
 ## Course Overview
 
 The FullStackOpen course is divided into several parts, each focusing on different aspects of full-stack development. The course covers various topics, including:
-
+<table>
+<tr>
+<td>
 - JavaScript
 - React
 - Node.js
 - Express
 - MongoDB
 - GraphQL
+</td>
+<td>
 - TypeScript
 - React Native
 - CI/CD
 - Containers
 - Testing
 - Deployment
+</td>
+</tr>
+</table>
 
 ## Repository Structure
 
