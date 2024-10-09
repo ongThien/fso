@@ -20,7 +20,7 @@ const Anecdote = ({ anecdote, handleClick }) => {
 
 Anecdote.propTypes = {
   anecdote: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     votes: PropTypes.number.isRequired,
   }).isRequired,
