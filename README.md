@@ -8,20 +8,24 @@ The FullStackOpen course is divided into several parts, each focusing on differe
 <table>
 <tr>
 <td>
-- JavaScript
-- React
-- Node.js
-- Express
-- MongoDB
-- GraphQL
+<ul>
+<li>JavaScript</li>
+<li>React</li>
+<li>Node.js</li>
+<li>Express</li>
+<li>MongoDB</li>
+<li>GraphQL</li>
+</ul>
 </td>
 <td>
-- TypeScript
-- React Native
-- CI/CD
-- Containers
-- Testing
-- Deployment
+<ul>
+<li>TypeScript</li>
+<li>React Native</li>
+<li>CI/CD</li>
+<li>Containers</li>
+<li>Testing</li>
+<li>Deployment</li>
+</ul>
 </td>
 </tr>
 </table>
