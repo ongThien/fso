@@ -41,6 +41,7 @@ The repository is organized into different directories, each corresponding to a 
 ├── part3 Programming a server with NodeJS and Express
 ├── part4 Testing Express servers, user administration
 ├── part5 Testing React apps
+├── part6 Advanced state management
 └── README.md
 ```
 
