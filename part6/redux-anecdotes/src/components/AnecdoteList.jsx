@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { vote } from "../reducers/anecdoteReducer";
+import { vote } from "../slides/anecdoteSlide";
 import PropTypes from "prop-types";
 
 const Anecdote = ({ anecdote, handleClick }) => {
@@ -45,7 +45,7 @@ const AnecdoteList = () => {
 
   return (
     <>
-      {anecdotes.sort(byVotes).map((anecdote) => (
+      {[...anecdotes].sort(byVotes).map((anecdote) => (
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}

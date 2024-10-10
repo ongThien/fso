@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const anecdotesAtStart = [
   "If it hurts, do it more often",
   "Adding manpower to a late software project makes it later!",
@@ -17,45 +19,25 @@ const asObject = (anecdote) => {
   };
 };
 
-const initialState = anecdotesAtStart.map(asObject);
+export const initialState = anecdotesAtStart.map(asObject);
 
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "NEW":
-      return [...state, action.payload];
-    case "VOTE": {
-      const id = action.payload.id;
+const anecdoteSlide = createSlice({
+  name: "anecdotes",
+  initialState,
+  reducers: {
+    create: (state, action) => [...state, asObject(action.payload)],
+    vote: (state, action) => {
+      const id = action.payload;
       const anecdoteToVote = state.find((anec) => anec.id === id);
       const votedAnecdote = {
         ...anecdoteToVote,
         votes: anecdoteToVote.votes + 1,
       };
       return state.map((anec) => (anec.id === id ? votedAnecdote : anec));
-    }
+    },
+  },
+});
 
-    default:
-      return state;
-  }
-};
 
-const vote = (id) => {
-  return {
-    type: "VOTE",
-    payload: { id },
-  };
-};
-
-const createAnecdote = (anecdote) => {
-  return {
-    type: "NEW",
-    payload: asObject(anecdote),
-  };
-};
-
-export {
-  initialState,
-  createAnecdote,
-  vote
-}
-
-export default reducer;
+export const { create, vote } = anecdoteSlide.actions;
+export default anecdoteSlide.reducer;

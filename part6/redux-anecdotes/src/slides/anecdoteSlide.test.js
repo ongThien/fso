@@ -1,29 +1,31 @@
-import reducer, {
-  initialState as sample,
-  createAnecdote,
-  vote,
-} from "./anecdoteReducer";
+import reducer, { initialState as sample } from "./anecdoteSlide";
 import deepFreeze from "deep-freeze";
 
 describe("anecdoteReducer", () => {
-  test("should return new state with action NEW", () => {
+  test("should return new state with action anecdotes/create", () => {
     const initialState = sample;
-    deepFreeze(initialState);
+    const testAction = {
+      type: "anecdotes/create",
+      payload: "test",
+    };
 
-    const testAction = createAnecdote("test");
+    deepFreeze(initialState);
     const newState = reducer(initialState, testAction);
 
     expect(newState).toHaveLength(initialState.length + 1);
-    expect(newState).toContainEqual(testAction.payload);
+    expect(newState.map((s) => s.content)).toContainEqual(testAction.payload);
   });
 
-  test("should be able to vote with action VOTE", () => {
+  test("should be able to vote with action anecdotes/vote", () => {
     const initialState = sample;
-    deepFreeze(initialState);
     const tobeVoted =
       initialState[Math.floor(Math.random() * initialState.length)];
+    const testAction = {
+      type: "anecdotes/vote",
+      payload: tobeVoted.id,
+    };
 
-    const testAction = vote(tobeVoted.id);
+    deepFreeze(initialState);
     const newState = reducer(initialState, testAction);
 
     const voted = newState.find((anecdote) => anecdote.id === tobeVoted.id);

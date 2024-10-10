@@ -4,7 +4,7 @@ const filterSlide = createSlice({
   name: "filters",
   initialState: "",
   reducers: {
-    filter: (state, action) => state = action.payload,
+    filter: (state, action) => action.payload,
   },
 });
 
