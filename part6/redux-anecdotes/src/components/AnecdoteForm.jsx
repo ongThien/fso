@@ -1,21 +1,15 @@
 import { useDispatch } from "react-redux";
-import { create } from "../slides/anecdoteSlide";
+import { createAnecdote } from "../slides/anecdoteSlide";
 import { setNoti, removeNoti } from "../slides/notificationSlide";
-import anecdoteService from "../services/anecdotes";
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
 
-  const createAnecdote = async (event) => {
+  const createNewAnecdote = async (event) => {
     event.preventDefault();
     const anecdote = event.target.anecdote.value;
     event.target.anecdote.value = "";
-    
-    const newAnecdote = await anecdoteService.create({
-      content: anecdote,
-      votes: 0,
-    });
-    dispatch(create(newAnecdote));
+    dispatch(createAnecdote(anecdote));
     dispatch(setNoti(`You created ${anecdote}`));
     setTimeout(() => dispatch(removeNoti()), 5000);
   };
@@ -23,7 +17,7 @@ const AnecdoteForm = () => {
   return (
     <>
       <h2>create new</h2>
-      <form onSubmit={createAnecdote}>
+      <form onSubmit={createNewAnecdote}>
         <div>
           <input name="anecdote" />
         </div>

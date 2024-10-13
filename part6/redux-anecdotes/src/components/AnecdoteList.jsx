@@ -1,9 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import { vote } from "../slides/anecdoteSlide";
+import { voteAnecdote } from "../slides/anecdoteSlide";
 import { removeNoti, setNoti } from "../slides/notificationSlide";
 
-const Anecdote = ({ anecdote, handleClick }) => {
+const Anecdote = ({ anecdote, handleVote }) => {
   const { id, content, votes } = anecdote;
 
   return (
@@ -12,7 +12,7 @@ const Anecdote = ({ anecdote, handleClick }) => {
         <div>{content}</div>
         <div>
           has {votes}
-          <button onClick={handleClick}>vote</button>
+          <button onClick={handleVote}>vote</button>
         </div>
       </div>
     </>
@@ -26,7 +26,7 @@ Anecdote.propTypes = {
     votes: PropTypes.number.isRequired,
   }).isRequired,
 
-  handleClick: PropTypes.func.isRequired,
+  handleVote: PropTypes.func.isRequired,
 };
 
 const AnecdoteList = () => {
@@ -42,6 +42,13 @@ const AnecdoteList = () => {
 
   const anecdotes = useSelector(anecdotesSelector);
   const dispatch = useDispatch();
+
+  const updateVoteAnecdote = async (anecdote) => {
+    dispatch(voteAnecdote(anecdote));
+    dispatch(setNoti(`You voted ${anecdote.content}`));
+    setTimeout(() => dispatch(removeNoti()), 5000);
+  };
+
   const byVotes = (a, b) => b.votes - a.votes;
 
   return (
@@ -50,10 +57,8 @@ const AnecdoteList = () => {
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
-          handleClick={() => {
-            dispatch(vote(anecdote.id));
-            dispatch(setNoti(`You voted ${anecdote.content}`));
-            setTimeout(() => dispatch(removeNoti()), 5000);
+          handleVote={() => {
+            updateVoteAnecdote(anecdote);
           }}
         />
       ))}
