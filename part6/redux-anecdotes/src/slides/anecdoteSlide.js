@@ -7,13 +7,8 @@ const anecdoteSlide = createSlice({
   reducers: {
     create: (state, action) => [...state, action.payload],
     vote: (state, action) => {
-      const id = action.payload.id;
-      const anecdoteToVote = state.find((anec) => anec.id === id);
-      const votedAnecdote = {
-        ...anecdoteToVote,
-        votes: anecdoteToVote.votes + 1,
-      };
-      return state.map((anec) => (anec.id === id ? votedAnecdote : anec));
+      const upvoted = action.payload;
+      return state.map((anec) => (anec.id === upvoted.id ? upvoted : anec));
     },
     set: (state, action) => action.payload,
   },
