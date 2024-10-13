@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "../slides/anecdoteSlide";
-import { setNoti, removeNoti } from "../slides/notificationSlide";
+import { handleNoti } from "../slides/notificationSlide";
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
@@ -10,8 +10,7 @@ const AnecdoteForm = () => {
     const anecdote = event.target.anecdote.value;
     event.target.anecdote.value = "";
     dispatch(createAnecdote(anecdote));
-    dispatch(setNoti(`You created ${anecdote}`));
-    setTimeout(() => dispatch(removeNoti()), 5000);
+    dispatch(handleNoti(`You created ${anecdote}`, 5000));
   };
 
   return (

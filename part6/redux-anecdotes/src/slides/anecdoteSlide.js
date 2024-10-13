@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import anecdoteService from "../services/anecdotes";
 
 const anecdoteSlide = createSlice({
@@ -7,16 +7,12 @@ const anecdoteSlide = createSlice({
   reducers: {
     create: (state, action) => [...state, action.payload],
     vote: (state, action) => {
-      console.log("VOTE ACTION.PAYLOAD", action.payload);
-      
       const id = action.payload.id;
       const anecdoteToVote = state.find((anec) => anec.id === id);
-      console.log("TO VOTE", current(anecdoteToVote));
       const votedAnecdote = {
         ...anecdoteToVote,
         votes: anecdoteToVote.votes + 1,
       };
-      console.log("VOTED", votedAnecdote);
       return state.map((anec) => (anec.id === id ? votedAnecdote : anec));
     },
     set: (state, action) => action.payload,
