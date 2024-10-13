@@ -43,7 +43,7 @@ const AnecdoteList = () => {
   const anecdotes = useSelector(anecdotesSelector);
   const dispatch = useDispatch();
 
-  const handleUpdateVote = async (anecdote) => {
+  const handleUpdateVote = (anecdote) => {
     dispatch(voteAnecdote(anecdote));
     dispatch(handleNoti(`You voted ${anecdote.content}`, 5000));
   };

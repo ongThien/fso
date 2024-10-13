@@ -1,16 +1,17 @@
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "../slides/anecdoteSlide";
 import { handleNoti } from "../slides/notificationSlide";
+import { useState } from "react";
 
 const AnecdoteForm = () => {
+  const [anecdote, setAnecdote] = useState("");
   const dispatch = useDispatch();
 
-  const createNewAnecdote = async (event) => {
+  const createNewAnecdote = (event) => {
     event.preventDefault();
-    const anecdote = event.target.anecdote.value;
-    event.target.anecdote.value = "";
     dispatch(createAnecdote(anecdote));
     dispatch(handleNoti(`You created ${anecdote}`, 5000));
+    setAnecdote("");
   };
 
   return (
@@ -18,7 +19,7 @@ const AnecdoteForm = () => {
       <h2>create new</h2>
       <form onSubmit={createNewAnecdote}>
         <div>
-          <input name="anecdote" />
+          <input name="anecdote" value={anecdote} onChange={(e) => setAnecdote(e.target.value)}/>
         </div>
         <button type="submit">create</button>
       </form>
