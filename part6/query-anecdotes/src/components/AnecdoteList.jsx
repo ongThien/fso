@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAnecdotes, upvoteAnecdote } from "../requests";
+import { useNotificationDispatch } from "../hooks/useNotification";
 import PropTypes from "prop-types";
 
 const Anecdote = ({ anecdote, handleVote }) => {
@@ -25,6 +26,7 @@ Anecdote.propTypes = {
 };
 
 const AnecdoteList = () => {
+  const dispatch = useNotificationDispatch();
   const queryClient = useQueryClient();
 
   const updateAnecdoteMutation = useMutation({
@@ -42,6 +44,8 @@ const AnecdoteList = () => {
 
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 });
+    dispatch({ type: "VOTE", payload: anecdote.content });
+    setTimeout(() => dispatch({ type: "CLEAR" }), 5000);
   };
 
   const result = useQuery({

@@ -32,8 +32,13 @@
     },
     {
       "content": "test anecdote creation",
-      "votes": 4,
+      "votes": 8,
       "id": "bI9oh-O"
+    },
+    {
+      "content": "everything is going well",
+      "votes": 0,
+      "id": "ll6FqKz"
     }
   ]
 }

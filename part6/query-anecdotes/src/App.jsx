@@ -1,16 +1,17 @@
 import Notification from "./components/Notification";
 import AnecdoteForm from "./components/AnecdoteForm";
 import AnecdoteList from "./components/AnecdoteList";
+import { NotificationContextProvider } from "./context/NotificationContext";
 
 const App = () => {
-  
-
   return (
     <div>
       <h3>Anecdote app</h3>
-      <Notification />
-      <AnecdoteForm />
-      <AnecdoteList />
+      <NotificationContextProvider>
+        <Notification />
+        <AnecdoteForm />
+        <AnecdoteList />
+      </NotificationContextProvider>
     </div>
   );
 };
