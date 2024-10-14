@@ -14,21 +14,24 @@ const AnecdoteForm = () => {
       const anecdotes = queryClient.getQueryData(["anecdotes"]);
       queryClient.setQueryData(["anecdotes"], anecdotes.concat(newAnecdote));
     },
+    onError: () => {
+      dispatch({ type: "ERROR" });
+      setTimeout(() => dispatch({ type: "CLEAR" }), 5000);
+    }
   });
 
-  const onCreate = (event) => {
+  const createNewAnecdote = (event) => {
     event.preventDefault();
     newAnecdoteMutation.mutate({ content: anecdote, votes: 0 });
     dispatch({ type: "CREATE", payload: anecdote });
     setTimeout(() => dispatch({ type: "CLEAR" }), 5000);
     setAnecdote("");
-    console.log("new anecdote", anecdote);
   };
 
   return (
     <div>
       <h3>create new</h3>
-      <form onSubmit={onCreate}>
+      <form onSubmit={createNewAnecdote}>
         <input
           name="anecdote"
           value={anecdote}
