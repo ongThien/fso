@@ -53,6 +53,7 @@ The repository is organized into different directories, each corresponding to a 
 ├── part4 Testing Express servers, user administration
 ├── part5 Testing React apps
 ├── part6 Advanced state management
+├── part7 React router, custom hooks, styling app with CSS and webpack
 └── README.md
 ```
 
