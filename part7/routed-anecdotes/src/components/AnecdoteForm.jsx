@@ -1,15 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAnecdotesDispatch } from "../context/anecdotesContext";
+import { useNotificationDispatch } from "../context/notificationsContext";
 
 const AnecdoteForm = () => {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
-
+  const anecdoteDispatch = useAnecdotesDispatch();
+  const notiDispatch = useNotificationDispatch();
+  const navigate = useNavigate();
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
-    // setAnecdotes(anecdotes.concat(anecdote));
+    anecdoteDispatch({ type: "ADD", payload: anecdote });
+    notiDispatch({ type: "NEW_ANECDOTE_CREATED", payload: anecdote.content });
+    setTimeout(() => notiDispatch({ type: "CLEAR" }), 5000);
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addNew({
@@ -18,6 +26,7 @@ const AnecdoteForm = () => {
       info,
       votes: 0,
     });
+    navigate("/");
   };
 
   return (
