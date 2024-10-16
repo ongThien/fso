@@ -1,7 +1,7 @@
-import { useReducer, createContext, useContext } from "react";
+import { useReducer, createContext } from "react";
 
-const AnecdotesContext = createContext(null);
-const AnecdotesDispatchContext = createContext(null);
+export const AnecdotesContext = createContext(null);
+export const AnecdotesDispatchContext = createContext(null);
 
 export const AnecdotesProvider = ({ children }) => {
   const [anecdotes, dispatch] = useReducer(anecdotesReducer, initialAnecdotes);
@@ -14,9 +14,6 @@ export const AnecdotesProvider = ({ children }) => {
     </AnecdotesContext.Provider>
   );
 };
-
-export const useAnecdotes = () => useContext(AnecdotesContext);
-export const useAnecdotesDispatch = () => useContext(AnecdotesDispatchContext);
 
 const anecdotesReducer = (anecdotes, action) => {
   switch (action.type) {

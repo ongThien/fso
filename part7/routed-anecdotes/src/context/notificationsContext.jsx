@@ -1,9 +1,9 @@
-import { useReducer, createContext, useContext } from "react";
+import { useReducer, createContext } from "react";
 
-const NotificationsContext = createContext(null);
-const NotificationsDispatchContext = createContext(null);
+export const NotificationsContext = createContext(null);
+export const NotificationsDispatchContext = createContext(null);
 
-export const NotificationsProvider = ({children}) => {
+export const NotificationsProvider = ({ children }) => {
   const [notification, dispatch] = useReducer(notificationsReducer, "");
 
   return (
@@ -14,9 +14,6 @@ export const NotificationsProvider = ({children}) => {
     </NotificationsContext.Provider>
   )
 }
-
-export const useNotification = () => useContext(NotificationsContext);
-export const useNotificationDispatch = () => useContext(NotificationsDispatchContext);
 
 const notificationsReducer = (notification, action) => {
   switch (action.type) {

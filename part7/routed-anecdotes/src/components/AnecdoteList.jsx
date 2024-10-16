@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useAnecdotes } from "../context/anecdotesContext";
+import { useAnecdotes } from "../hooks";
 
 const AnecdoteList = () => {
   const anecdotes = useAnecdotes();

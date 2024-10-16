@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useAnecdotes } from "../context/anecdotesContext";
+import { useAnecdotes } from "../hooks";
 
 const Anecdote = () => {
   const id = useParams().id;
