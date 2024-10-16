@@ -1,19 +1,33 @@
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import AnecdoteList from "./AnecdoteList";
+import AnecdoteForm from "./AnecdoteForm";
+import About from "./About";
+
 const Menu = () => {
   const padding = {
     paddingRight: 5,
   };
+
   return (
-    <div>
-      <a href="#" style={padding}>
-        anecdotes
-      </a>
-      <a href="#" style={padding}>
-        create new
-      </a>
-      <a href="#" style={padding}>
-        about
-      </a>
-    </div>
+    <Router>
+      <div>
+        <Link style={padding} to={"/"}>
+          anecdotes
+        </Link>
+        <Link style={padding} to={"/create"}>
+          create new
+        </Link>
+        <Link style={padding} to={"/about"}>
+          about
+        </Link>
+      </div>
+
+      <Routes>
+        <Route path="/" element={<AnecdoteList />} />
+        <Route path="/create" element={<AnecdoteForm />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
   );
 };
 
