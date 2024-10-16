@@ -19,6 +19,8 @@ const notificationsReducer = (notification, action) => {
   switch (action.type) {
     case "NEW_ANECDOTE_CREATED":
       return `a new anecdote ${action.payload} created`;
+    case "ERROR":
+      return action.payload;
     case "CLEAR":
       return "";
     default:
