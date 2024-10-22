@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import storage from "../services/storage";
+import storageService from "../services/storage";
 import {
   likeBlog,
   removeBlog,
@@ -22,9 +22,9 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   };
 
-  const canRemove = blog.user ? blog.user.username === storage.me() : true;
+  const canRemove = blog.user ? blog.user.username === storageService.me() : true;
 
-  console.log(blog.user, storage.me(), canRemove);
+  console.log(blog.user, storageService.me(), canRemove);
 
   const handleLike = async (blog) => {
     dispatch(likeBlog(blog));

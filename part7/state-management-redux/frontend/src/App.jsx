@@ -1,56 +1,26 @@
-import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import loginService from "./services/login";
-import storage from "./services/storage";
-import Login from "./components/Login";
-import NewBlog from "./components/NewBlog";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Notification from "./components/Notification";
+import Login from "./components/Login";
+import User from "./components/User";
+import NewBlog from "./components/NewBlog";
 import BlogList from "./components/BlogList";
-import {
-  initializeBlogs,
-} from "./slides/blogSlide";
-import { useNotify } from "./hooks";
+import { initializeUser } from "./slides/userSlide";
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const user = useSelector(({user}) => user);
   const dispatch = useDispatch();
-  const notify = useNotify();
 
   useEffect(() => {
-    dispatch(initializeBlogs());
+    dispatch(initializeUser());
   }, []);
-
-  useEffect(() => {
-    const user = storage.loadUser();
-    if (user) {
-      setUser(user);
-    }
-  }, []);
-
-  const handleLogin = async (credentials) => {
-    try {
-      const user = await loginService.login(credentials);
-      setUser(user);
-      storage.saveUser(user);
-      notify(`Welcome back, ${user.name}`);
-    } catch (error) {
-      notify("Wrong credentials", "error");
-    }
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    storage.removeUser();
-    notify(`Bye, ${user.name}!`);
-  };
-
 
   if (!user) {
     return (
       <div>
         <h2>blogs</h2>
         <Notification />
-        <Login doLogin={handleLogin} />
+        <Login />
       </div>
     );
   }
@@ -59,10 +29,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification />
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
+      <User user={user}/>
       <NewBlog />
       <BlogList />
     </div>

@@ -1,4 +1,4 @@
-const KEY = import.meta.env.STORAGE_KEY;
+const KEY = "blogUser";
 
 const saveUser = (user) => {
   localStorage.setItem(KEY, JSON.stringify(user));

@@ -38,9 +38,13 @@ const NewBlog = () => {
   const notify = useNotify();
 
   const handleCreate = async (blog) => {
-    dispatch(createBlog(blog));
-    notify(`Blog created: ${blog.title}, ${blog.author}`);
-    blogFormRef.current.toggleVisibility();
+    try {
+      dispatch(createBlog(blog));
+      notify(`Blog created: ${blog.title}, ${blog.author}`);
+      blogFormRef.current.toggleVisibility();
+    } catch (error) {
+      notify(error);
+    }
   };
 
   const handleSubmit = (event) => {
