@@ -1,9 +1,17 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import storage from "../services/storage";
+import {
+  likeBlog,
+  removeBlog,
+} from "../slides/blogSlide";
+import { useNotify } from "../hooks";
 
-const Blog = ({ blog, handleVote, handleDelete }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch();
+  const notify = useNotify();
 
   const nameOfUser = blog.user ? blog.user.name : "anonymous";
 
@@ -18,6 +26,16 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
 
   console.log(blog.user, storage.me(), canRemove);
 
+  const handleLike = async (blog) => {
+    dispatch(likeBlog(blog));
+    notify(`You liked ${blog.title} by ${blog.author}`);
+  };
+
+  const handleDelete = async (blog) => {
+    dispatch(removeBlog(blog));
+    notify(`Blog ${blog.title}, by ${blog.author} removed`);
+  };
+
   return (
     <div style={style} className="blog">
       {blog.title} by {blog.author}
@@ -31,7 +49,7 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
           </div>
           <div>
             likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
+            <button style={{ marginLeft: 3 }} onClick={() => handleLike(blog)}>
               like
             </button>
           </div>
@@ -53,8 +71,6 @@ Blog.propTypes = {
     likes: PropTypes.number.isRequired,
     user: PropTypes.object,
   }).isRequired,
-  handleVote: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
 };
 
 export default Blog;
