@@ -7,9 +7,9 @@ const getConfig = () => ({
   headers: { Authorization: `Bearer ${storage.loadUser().token}` },
 });
 
-const getAll = () => {
-  const request = axios.get(baseUrl);
-  return request.then((response) => response.data);
+const getAll = async () => {
+  const response = await axios.get(baseUrl);
+  return response.data;
 };
 
 const update = async (newObject) => {
