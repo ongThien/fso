@@ -1,0 +1,51 @@
+{
+  "name": "state-management-redux",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./backend/index.js",
+  "scripts": {
+    "start:backend": "NODE_ENV=production node ./backend/index.js",
+    "dev:backend": "NODE_ENV=development nodemon ./backend/index.js",
+    "test:backend": "NODE_ENV=test node --test --test-concurrency=1",
+    "start:test:backend": "NODE_ENV=test node ./backend/index.js",
+    "dev:frontend": "vite ./frontend",
+    "build:frontend": "vite build ./frontend",
+    "preview:frontend": "vite preview ./frontend",
+    "test:frontend": "vitest run ./frontend",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/react": "^14.3.1",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "eslint-plugin-vitest-globals": "^1.4.0",
+    "nodemon": "^3.0.3",
+    "supertest": "^6.3.4",
+    "vite": "^4.4.5",
+    "vitest": "^2.1.3"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.59.16",
+    "axios": "^1.6.7",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.4",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "jsdom": "^24.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.3",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
