@@ -31,4 +31,12 @@ const remove = async (newObject) => {
   return newObject;
 };
 
-export default { getAll, create, update, remove };
+const addComment = async (blogId, commentObj) => {
+  const response = await axios.post(
+    `${baseUrl}/${blogId}/comments`,
+    commentObj
+  );
+  return response.data;
+}
+
+export default { getAll, create, update, remove, addComment };

@@ -3,6 +3,7 @@ import { useMatch, useNavigate } from "react-router-dom";
 import blogService from "../services/blogs";
 import storageService from "../services/storage";
 import { useNotify } from "../hooks";
+import Comment from "./Comment";
 
 const Blog = () => {
   const queryClient = useQueryClient();
@@ -68,7 +69,7 @@ const Blog = () => {
   return (
     <>
       <h2>
-        {title} by {author}
+        {title}, written by {author}
       </h2>
       <div>
         <p>{url}</p>
@@ -80,6 +81,8 @@ const Blog = () => {
         </p>
         <p>added by {user ? user.name : "anonymous"}</p>
         {canRemove && <button onClick={handleRemove}>remove</button>}
+
+        <Comment blog={blog} />
       </div>
     </>
   );

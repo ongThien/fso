@@ -44,7 +44,9 @@ const notificationReducer = (notification, action) => {
       );
     case "USER_LOGIN_ERROR":
       return generateNotification("Wrong credentials", "error");
-    case "ERROR":
+    case "NEW_COMMENT":
+      return generateNotification(`You added a new comment`);
+      case "ERROR":
       return generateNotification("Something went wrong", "error");
     case "CLEAR":
       return null;
