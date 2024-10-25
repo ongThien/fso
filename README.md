@@ -35,25 +35,14 @@ The FullStackOpen course is divided into several parts, each focusing on differe
 The repository is organized into different directories, each corresponding to a specific part or module of the course. Here's an overview of the directory structure:
 ```
 ├── part0 Fundamentals of Web apps
-│   ├── 1-HTML
-│   ├── 2-CSS
-│   ├── 3-HTML-forms
-│   ├── 4-New-note-diagram
-│   ├── 5-SPA-diagram
-│   └── 6-New-note-in-SPA-diagram
 ├── part1 Introduction to React
-│   ├── anecdotes
-│   ├── courseinfo
-│   └── unicafe
 ├── part2 Communicating with servers
-│   ├── countries
-│   ├── courseinfo
-│   └── phonebook
 ├── part3 Programming a server with NodeJS and Express
 ├── part4 Testing Express servers, user administration
 ├── part5 Testing React apps
 ├── part6 Advanced state management
 ├── part7 React router, custom hooks, styling app with CSS and webpack
+├── part8 GraphQL
 └── README.md
 ```
 
