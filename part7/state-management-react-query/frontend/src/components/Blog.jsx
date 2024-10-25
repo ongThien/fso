@@ -1,102 +1,88 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import PropTypes from "prop-types";
-import storageService from "../services/storage";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMatch, useNavigate } from "react-router-dom";
 import blogService from "../services/blogs";
+import storageService from "../services/storage";
 import { useNotify } from "../hooks";
 
-const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false);
+const Blog = () => {
   const queryClient = useQueryClient();
   const notifyWith = useNotify();
+  const navigate = useNavigate();
+  const match = useMatch("/blogs/:id");
 
-  const updateBlogMutation = useMutation({
-    mutationFn: blogService.update,
-    onSuccess: (updatedBlog) => {
-      const blogs = queryClient.getQueryData(["blogs"]);
-      queryClient.setQueryData(
-        ["blogs"],
-        blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
-      );
-      notifyWith({ type: "UPVOTE_BLOG", payload: updatedBlog });
-    },
-    onError: () => {
-      notifyWith({ type: "ERROR" });
-    },
+  const useHandleMutation = (mutationFn, successMessage, onSuccess) =>
+    useMutation({
+      mutationFn,
+      onSuccess: (data) => {
+        const blogs = queryClient.getQueryData(["blogs"]);
+        queryClient.setQueryData(["blogs"], onSuccess(blogs, data));
+        notifyWith({ type: successMessage, payload: data });
+      },
+      onError: () => notifyWith({ type: "ERROR" }),
+    });
+
+  const updateBlog = useHandleMutation(
+    blogService.update,
+    "UPVOTE_BLOG",
+    (blogs, updatedBlog) =>
+      blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
+  );
+
+  const removeBlog = useHandleMutation(
+    blogService.remove,
+    "REMOVE_BLOG",
+    (blogs, removedBlog) => blogs.filter((b) => b.id !== removedBlog.id)
+  );
+
+  const {
+    data: blogs = [],
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
-  const removeBlogMutation = useMutation({
-    mutationFn: blogService.remove,
-    onSuccess: (removedBlog) => {
-      const blogs = queryClient.getQueryData(["blogs"]);
-      queryClient.setQueryData(
-        ["blogs"],
-        blogs.filter((b) => b.id !== removedBlog.id)
-      );
-      notifyWith({ type: "REMOVE_BLOG", payload: removedBlog });
-    },
-    onError: () => {
-      notifyWith({ type: "ERROR" });
-    },
-  });
+  if (isPending) return <span>Loading data...</span>;
+  if (isError) return <span>Error: {error.message}</span>;
 
-  const handleVote = (b) => {
-    updateBlogMutation.mutate({ ...b, likes: b.likes + 1 });
-  };
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null;
+  if (!blog) return null;
 
-  const handleDelete = (b) => {
-    if (window.confirm(`Are you sure you want to delete ${b.title}?`)) {
-      removeBlogMutation.mutate(b);
+  const { user, title, author, likes, url } = blog;
+  const canRemove = user ? user.username === storageService.me() : true;
+
+  const handleLike = () =>
+    updateBlog.mutate({ ...blog, likes: blog.likes + 1 });
+
+  const handleRemove = () => {
+    if (window.confirm(`Are you sure you want to delete ${title}?`)) {
+      removeBlog.mutate(blog);
+      navigate("/blogs");
     }
   };
 
-  const style = {
-    border: "solid",
-    padding: 10,
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
-  const nameOfUser = blog.user ? blog.user.name : "anonymous";
-  const canRemove = blog.user
-    ? blog.user.username === storageService.me()
-    : true;
-
   return (
-    <div style={style} className="blog">
-      {blog.title} by {blog.author}
-      <button style={{ marginLeft: 3 }} onClick={() => setVisible(!visible)}>
-        {visible ? "hide" : "view"}
-      </button>
-      {visible && (
-        <div>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-          <div>
-            likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
-              like
-            </button>
-          </div>
-          <div>{nameOfUser}</div>
-          {canRemove && (
-            <button onClick={() => handleDelete(blog)}>remove</button>
-          )}
-        </div>
-      )}
-    </div>
+    <>
+      <h2>
+        {title} by {author}
+      </h2>
+      <div>
+        <p>{url}</p>
+        <p>
+          {likes} {likes > 1 ? "likes" : "like"}
+          <button style={{ marginLeft: 4 }} onClick={handleLike}>
+            like
+          </button>
+        </p>
+        <p>added by {user ? user.name : "anonymous"}</p>
+        {canRemove && <button onClick={handleRemove}>remove</button>}
+      </div>
+    </>
   );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    author: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    likes: PropTypes.number.isRequired,
-    user: PropTypes.object,
-  }).isRequired,
 };
 
 export default Blog;

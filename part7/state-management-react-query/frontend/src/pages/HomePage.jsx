@@ -1,10 +1,11 @@
 import { useUser, useUserDispatch, useNotify } from "../hooks";
 import { Routes, Route, Link } from "react-router-dom";
 import BlogList from "../components/BlogList";
+import Blog from "../components/Blog";
 import UserList from "../components/UserList";
+import User from "../components/User";
 import Home from "../components/Home";
 import Notification from "../components/Notification";
-import User from "../components/User";
 
 const CurrentUser = () => {
   const user = useUser();
@@ -29,21 +30,26 @@ const CurrentUser = () => {
 };
 
 const HomePage = () => {
-  const style = {
+  const headerStyle = {
+    backgroundColor: "#ddd",
+    padding: 8,
+  };
+
+  const linkStyle = {
     padding: 5,
   };
 
   return (
     <>
-      <header>
-        <nav style={{ marginTop: 20 }}>
-          <Link style={style} to={"/"}>
+      <header style={headerStyle}>
+        <nav>
+          <Link style={linkStyle} to={"/"}>
             Home
           </Link>
-          <Link style={style} to={"/blogs"}>
+          <Link style={linkStyle} to={"/blogs"}>
             Blogs
           </Link>
-          <Link style={style} to={"/users"}>
+          <Link style={linkStyle} to={"/users"}>
             Users
           </Link>
           <CurrentUser />
@@ -52,6 +58,7 @@ const HomePage = () => {
       <Notification />
 
       <Routes>
+        <Route path="/blogs/:id" element={<Blog />} />
         <Route path="/blogs" element={<BlogList />} />
         <Route path="/users/:id" element={<User />} />
         <Route path="/users" element={<UserList />} />
