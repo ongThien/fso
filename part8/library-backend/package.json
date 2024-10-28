@@ -2,17 +2,20 @@
   "name": "library-backend",
   "version": "1.0.0",
   "description": "backend for library app",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon ./src/app.js"
   },
   "author": "ongThien",
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.11.0",
+    "@graphql-tools/merge": "^9.0.8",
+    "@graphql-tools/schema": "^10.0.7",
     "dotenv": "^16.4.5",
-    "graphql": "^16.9.0"
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

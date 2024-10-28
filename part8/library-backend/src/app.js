@@ -1,6 +1,6 @@
 const { startStandaloneServer } = require("@apollo/server/standalone");
-const server = require("./app");
-const config = require("./utils/config");
+const server = require("./server");
+const config = require("./config/config");
 const logger = require("./utils/logger");
 
 startStandaloneServer(server, {
