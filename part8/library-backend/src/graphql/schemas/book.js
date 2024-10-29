@@ -13,6 +13,15 @@ const bookTypeDefs = gql`
     bookCount: Int!
     allBooks(author: String, genre: String): [Book]
   }
+
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]
+    ): Book 
+  }
 `;
 
 module.exports = bookTypeDefs;

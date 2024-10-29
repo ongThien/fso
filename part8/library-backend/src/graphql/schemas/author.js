@@ -5,12 +5,21 @@ const authorTypeDefs = gql`
     name: String!
     id: ID!
     born: Int
-    bookCount: Int
+    bookCount: Int!
   }
 
   type Query {
     authorCount: Int!
-    allAuthors: [Author!]!
+    allAuthors: [Author!]
+  }
+
+  type Mutation {
+    addAuthor(
+      name: String!
+      id: ID!
+      born: Int
+      bookCount: Int!
+    ): Author
   }
 `;
 
