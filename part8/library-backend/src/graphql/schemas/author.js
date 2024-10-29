@@ -20,6 +20,11 @@ const authorTypeDefs = gql`
       born: Int
       bookCount: Int!
     ): Author
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 `;
 

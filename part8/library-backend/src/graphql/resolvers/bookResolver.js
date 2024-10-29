@@ -25,10 +25,10 @@ const bookResolvers = {
   Mutation: {
     addBook: async (root, args) => {
       const { author, ...bookFields } = args;
-      let existingAuthor = authors.find((a) => a.name === author);
+      const existingAuthor = authors.find((a) => a.name === author);
 
       if (!existingAuthor) {
-        existingAuthor = await authorResolvers.Mutation.addAuthor(root, {
+        await authorResolvers.Mutation.addAuthor(root, {
           name: author,
         });
       }

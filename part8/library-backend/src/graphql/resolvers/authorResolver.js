@@ -12,6 +12,18 @@ const addAuthor = (root, args) => {
   return newAuthor;
 };
 
+const editAuthor = (root, { name, setBornTo }) => {
+  const authorExist = authors.find((a) => a.name === name);
+
+  if (!authorExist) return null;
+  logger.info("MODIFYING AUTHOR:", authorExist);
+
+  authorExist.born = setBornTo;
+
+  logger.info("SUCCESSFULLY MODIFIED AUTHOR:", authorExist);
+  return authorExist;
+};
+
 const authorResolvers = {
   Query: {
     authorCount: () => authors.length,
@@ -24,6 +36,7 @@ const authorResolvers = {
 
   Mutation: {
     addAuthor,
+    editAuthor,
   },
 };
 
