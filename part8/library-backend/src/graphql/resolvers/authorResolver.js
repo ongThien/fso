@@ -1,33 +1,31 @@
-const { v4: uuidv4 } = require("uuid");
-let { authors, books } = require("../../data");
+const Author = require("../../models/author");
+const Book = require("../../models/book");
 const logger = require("../../utils/logger");
 
-const bookCount = (author) =>
-  books.filter((book) => book.author === author.name).length;
-
-const addAuthor = (root, args) => {
-  const newAuthor = { ...args, id: uuidv4(), bookCount: 1 };
-  authors.push(newAuthor);
-  logger.info("ADDED NEW AUTHOR:", newAuthor);
-  return newAuthor;
+const bookCount = async (author) => {
+  return (await Book.find({ author })).length;
 };
 
-const editAuthor = (root, { name, setBornTo }) => {
-  const authorExist = authors.find((a) => a.name === name);
+const addAuthor = async (root, { name, born }) => {
+  const newAuthor = new Author({ name, born, bookCount: 1 });
+
+  logger.info("ADDED NEW AUTHOR:", newAuthor);
+  return newAuthor.save();
+};
+
+const editAuthor = async (root, { name, setBornTo }) => {
+  const authorExist = await Author.findOne({ name });
 
   if (!authorExist) return null;
-  logger.info("MODIFYING AUTHOR:", authorExist);
 
   authorExist.born = setBornTo;
-
-  logger.info("SUCCESSFULLY MODIFIED AUTHOR:", authorExist);
-  return authorExist;
+  return authorExist.save();
 };
 
 const authorResolvers = {
   Query: {
-    authorCount: () => authors.length,
-    allAuthors: () => authors,
+    authorCount: async () => Author.collection.countDocuments(),
+    allAuthors: async () => Author.find({}),
   },
 
   Author: {

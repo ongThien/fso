@@ -1,3 +1,6 @@
+const Author = require("./models/author");
+const Book = require("./models/book");
+
 let authors = [
   {
     name: "Robert Martin",
@@ -76,6 +79,22 @@ let books = [
   },
 ];
 
+// authors.forEach(async (a) => {
+//   const { name, born } = a;
+//   const author = new Author({ name, born });
+//   await author.save();
+//   console.log("saved new author", author);
+// });
+
+// books.forEach(async (b) => {
+//   const { title, published, author, genres } = b;
+//   const [bookAuthor] = await Author.find({name: author})
+//   console.log("BOOK AUTHOR:", bookAuthor);
+  
+//   const book = new Book({ title, published, author: bookAuthor._id, genres });
+//   await book.save();
+//   console.log("saved new book", book);
+// });
 module.exports = {
   authors,
   books,
