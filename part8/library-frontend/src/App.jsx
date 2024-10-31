@@ -10,7 +10,7 @@ const App = () => {
 
   const notify = (message) => {
     setNotification(message);
-    
+
     const timer = 5000;
     setTimeout(() => {
       setNotification(null);
@@ -27,7 +27,7 @@ const App = () => {
 
       <Notification message={notification} />
 
-      <Authors show={page === "authors"} />
+      <Authors show={page === "authors"} setMessage={notify}/>
 
       <Books show={page === "books"} />
 
