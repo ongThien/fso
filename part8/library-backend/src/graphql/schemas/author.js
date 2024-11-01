@@ -16,9 +16,7 @@ const authorTypeDefs = gql`
   type Mutation {
     addAuthor(
       name: String!
-      id: ID!
       born: Int
-      bookCount: Int!
     ): Author
 
     editAuthor(

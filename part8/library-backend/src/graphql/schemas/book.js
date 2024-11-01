@@ -6,7 +6,7 @@ const bookTypeDefs = gql`
     published: Int!
     author: Author!
     id: ID!
-    genres: [String!]
+    genres: [String!]!
   }
 
   type Query {
