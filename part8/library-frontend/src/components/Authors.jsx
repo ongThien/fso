@@ -1,12 +1,9 @@
+import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
 import { useInputField } from "../hooks";
-import { useState } from "react";
 
 const Authors = ({ show, setMessage }) => {
-  const authors = useQuery(ALL_AUTHORS);
-  // console.log("AUTHORS", authors);
-  
   const [authorName, setAuthorName] = useState("");
   const { reset: bornFieldReset, ...bornInputProps } = useInputField(
     "number",
@@ -14,16 +11,27 @@ const Authors = ({ show, setMessage }) => {
     true
   );
 
+  const { data: authors, loading, error } = useQuery(ALL_AUTHORS);
+
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
-      const messages = error.graphQLErrors.map((e) => e.message).join("\n");
-      setMessage(messages);
+      const message = error.graphQLErrors[0].message;
+      setMessage(message);
+    },
+    onCompleted: () => {
+      setAuthorName("");
+      bornFieldReset();
     },
   });
 
-  if (authors.loading) {
+  if (loading) {
     return <div>loading...</div>;
+  }
+
+  if (error) {
+    setMessage(error.message);
+    return null;
   }
 
   if (!show) {
@@ -38,15 +46,13 @@ const Authors = ({ show, setMessage }) => {
         born: Number(bornInputProps.value),
       },
     });
-    setAuthorName("");
-    bornFieldReset();
   };
 
   const editForm = () => {
     return (
       <form onSubmit={submit}>
         <SetBirthYearFormSelectAuthor
-          authors={authors.data.allAuthors}
+          authors={authors?.allAuthors}
           authorName={authorName}
           setAuthorName={setAuthorName}
         />
@@ -66,7 +72,7 @@ const Authors = ({ show, setMessage }) => {
             <th>born</th>
             <th>books</th>
           </tr>
-          {authors.data.allAuthors.map((a) => (
+          {authors?.allAuthors.map((a) => (
             <tr key={a.id}>
               <td>{a.name}</td>
               <td>{a.born ? a.born : "N/A"}</td>
@@ -77,7 +83,7 @@ const Authors = ({ show, setMessage }) => {
       </table>
 
       <h2>Set birthyear</h2>
-      {authors.data.allAuthors ? editForm() : null}
+      {authors?.allAuthors ? editForm() : null}
     </div>
   );
 };

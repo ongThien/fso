@@ -1,20 +1,67 @@
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
+import { useEffect, useState } from "react";
 
-const Books = (props) => {
-  const books = useQuery(ALL_BOOKS);
+const Books = ({ show, setMessage }) => {
+  const [genre, setGenre] = useState(null);
+  const [genres, setGenres] = useState([]);
 
-  if (books.loading) {
-    return <>loading...</>
+  const {
+    data: books,
+    loading,
+    error,
+  } = useQuery(ALL_BOOKS, {
+    variables: {
+      genre,
+    },
+  });
+
+  // fetch all genres
+  useEffect(() => {
+    if (books?.allBooks) {
+      const genresSet = new Set();
+      books.allBooks.forEach((book) => {
+        book.genres.forEach((genre) => genresSet.add(genre));
+      });
+      // convert it back to an array then use it in the state
+      // for me it's more intuitive, especially when we need mapping over multiple buttons
+      // and other operations
+      setGenres(Array.from(genresSet));
+    }
+  }, [books?.allBooks]);
+
+  if (loading) {
+    return <>loading...</>;
   }
 
-  if (!props.show) {
-    return null
+  if (error) {
+    setMessage(error.message);
+    return null;
+  }
+
+  if (!show) {
+    return null;
   }
 
   return (
     <div>
       <h2>books</h2>
+
+      {/* genres sections */}
+      <div>
+        <button onClick={() => setGenre(null)}>all genres</button>
+        {genres.map((genre) => (
+          <button key={genre} onClick={() => setGenre(genre)}>
+            {genre}
+          </button>
+        ))}
+      </div>
+
+      <div>
+        <p>
+          in <b>{genre ? genre : "all genres"}</b>
+        </p>
+      </div>
 
       <table>
         <tbody>
@@ -23,7 +70,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.data.allBooks.map((a) => (
+          {books.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -33,7 +80,7 @@ const Books = (props) => {
         </tbody>
       </table>
     </div>
-  )
-}
+  );
+};
 
-export default Books
+export default Books;

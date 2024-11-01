@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
@@ -11,6 +11,10 @@ const App = () => {
   const [notification, setNotification] = useState(null);
   const [token, setToken] = useState(null);
   const client = useApolloClient();
+
+  useEffect(() => {
+    setToken(localStorage.getItem("library-user-token"));
+  }, []);
 
   const notify = (message) => {
     setNotification(message);
@@ -46,13 +50,12 @@ const App = () => {
 
       <Authors show={page === "authors"} setMessage={notify} />
 
-      <Books show={page === "books"} />
+      <Books show={page === "books"} setMessage={notify} />
 
       <LoginForm
         show={page === "login"}
         setToken={setToken}
         setMessage={notify}
-        setPage={setPage}
       />
 
       <NewBook show={page === "add"} setMessage={notify} />
