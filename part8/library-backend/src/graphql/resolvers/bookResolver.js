@@ -24,7 +24,13 @@ const bookResolvers = {
   },
 
   Mutation: {
-    addBook: async (root, { author, title, published, genres }) => {
+    addBook: async (root, { author, title, published, genres }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError(
+          "Not authenticated to create new book, please login!"
+        );
+      }
+
       if (title.length < 5) {
         throw new GraphQLError(
           "Title too short, must be at least 5 characters",
@@ -37,7 +43,7 @@ const bookResolvers = {
         );
       }
 
-      const bookExist = await Book.findOne({title});
+      const bookExist = await Book.findOne({ title });
       if (bookExist) {
         throw new GraphQLError("This title has already existed", {
           extensions: {
@@ -79,7 +85,7 @@ const bookResolvers = {
               genres,
               author: existingAuthor._id,
             },
-            error
+            error,
           },
         });
       }

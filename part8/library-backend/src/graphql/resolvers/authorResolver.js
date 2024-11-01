@@ -38,7 +38,12 @@ const addAuthor = async (root, { name, born = null }) => {
   return newAuthor;
 };
 
-const editAuthor = async (root, { name, setBornTo }) => {
+const editAuthor = async (root, { name, setBornTo }, context) => {
+
+  if (!context.currentUser) {
+    throw new GraphQLError("Not authenticated to edit author, please login!");
+  }
+
   const authorExist = await Author.findOne({ name });
 
   if (!authorExist) {
