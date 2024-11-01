@@ -31,6 +31,9 @@ const NewBook = ({ show, setMessage }) => {
       const messages = error.graphQLErrors.map((e) => e.message).join("\n");
       setMessage(messages);
     },
+    onCompleted: () => {
+      fieldResetFns.forEach((fn) => fn());
+    }
   });
 
   if (!show) {
@@ -56,7 +59,7 @@ const NewBook = ({ show, setMessage }) => {
       },
     });
 
-    fieldResetFns.forEach((fn) => fn());
+    // fieldResetFns.forEach((fn) => fn());
   };
 
   const addGenre = () => {
