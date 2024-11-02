@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
-import { useEffect, useState } from "react";
 
 const Books = ({ show, setMessage }) => {
   const [genre, setGenre] = useState(null);
@@ -10,6 +10,7 @@ const Books = ({ show, setMessage }) => {
     data: books,
     loading,
     error,
+    refetch,
   } = useQuery(ALL_BOOKS, {
     variables: {
       genre,
@@ -29,6 +30,14 @@ const Books = ({ show, setMessage }) => {
       setGenres(Array.from(genresSet));
     }
   }, [books?.allBooks]);
+
+  // when a new book is added, the books view is updated
+  // at least when a genre selection button is pressed.
+  useEffect(() => {
+    if (genre) {
+      refetch({ genre });
+    }
+  }, [genre, refetch]);
 
   if (loading) {
     return <>loading...</>;

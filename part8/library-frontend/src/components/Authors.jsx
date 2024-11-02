@@ -16,8 +16,8 @@ const Authors = ({ show, setMessage }) => {
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
-      const message = error.graphQLErrors[0].message;
-      setMessage(message);
+      const messages = error.graphQLErrors.map((e) => e.message).join("\n");
+      setMessage(messages);
     },
     onCompleted: () => {
       setAuthorName("");

@@ -17,7 +17,8 @@ const LoginForm = ({ show, setToken, setMessage }) => {
 
   const [login, result] = useMutation(LOGIN, {
     onError: (error) => {
-      setMessage(error.graphQLErrors[0].message);
+      const messages = error.graphQLErrors.map((e) => e.message).join("\n");
+      setMessage(messages);
     },
     onCompleted: () => {
       usernameReset();

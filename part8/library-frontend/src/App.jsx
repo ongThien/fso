@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { useApolloClient } from "@apollo/client";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
-import { useApolloClient } from "@apollo/client";
 
 const App = () => {
   const [page, setPage] = useState("authors");
@@ -47,18 +47,15 @@ const App = () => {
       </div>
 
       <Notification message={notification} />
-
       <Authors show={page === "authors"} setMessage={notify} />
-
       <Books show={page === "books"} setMessage={notify} />
+      <NewBook show={page === "add"} setMessage={notify} />
 
       <LoginForm
         show={page === "login"}
         setToken={setToken}
         setMessage={notify}
       />
-
-      <NewBook show={page === "add"} setMessage={notify} />
     </div>
   );
 };
