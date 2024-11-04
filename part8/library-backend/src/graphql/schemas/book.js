@@ -22,6 +22,10 @@ const bookTypeDefs = gql`
       genres: [String!]
     ): Book 
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }
 `;
 
 module.exports = bookTypeDefs;
