@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@apollo/client";
-import { ALL_BOOKS } from "../queries";
+import { useQuery, useSubscription } from "@apollo/client";
+import { ALL_BOOKS, BOOK_ADDED } from "../queries";
+import { updateBookCache } from "../utils/utils";
 
 const Books = ({ show, setMessage }) => {
   const [genre, setGenre] = useState(null);
@@ -15,29 +16,37 @@ const Books = ({ show, setMessage }) => {
     variables: {
       genre,
     },
-  });
-
-  // fetch all genres
-  useEffect(() => {
-    if (books?.allBooks) {
+    onCompleted: ({ allBooks }) => {
       const genresSet = new Set();
-      books.allBooks.forEach((book) => {
+      // console.log("ALL BOOKS", allBooks);
+
+      allBooks.forEach((book) => {
         book.genres.forEach((genre) => genresSet.add(genre));
       });
       // convert it back to an array then use it in the state
       // for me it's more intuitive, especially when we need mapping over multiple buttons
       // and other operations
       setGenres(Array.from(genresSet));
-    }
-  }, [books?.allBooks]);
+    },
+  });
 
   // when a new book is added, the books view is updated
   // at least when a genre selection button is pressed.
-  useEffect(() => {
-    if (genre) {
-      refetch({ genre });
-    }
-  }, [genre, refetch]);
+  // According to https://www.apollographql.com/docs/react/api/react/hooks#usesubscription
+  // If you want to react to incoming data, please use the onData option instead of useEffect.
+  // useEffect(() => {
+  //   if (genre) {
+  //     refetch({ genre });
+  //   }
+  // }, [genre, refetch]);
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data: { data: newData }, client }) => {
+      const addedBook = newData.bookAdded;
+      window.alert(`New book added: ${addedBook.title}`);
+      updateBookCache(client.cache, { query: ALL_BOOKS }, addedBook);
+      if (genre) refetch({ genre });
+    },
+  });
 
   if (loading) {
     return <>loading...</>;

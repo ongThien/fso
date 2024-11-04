@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from "../queries";
 import { useInputField } from "../hooks";
+import { updateBookCache } from "../utils/utils";
 
 const NewBook = ({ show, setMessage }) => {
   const { reset: titleFieldReset, ...titleInputProps } = useInputField(
@@ -34,11 +35,12 @@ const NewBook = ({ show, setMessage }) => {
       // this cache.updateQuery part together with
       // useEffect on genre in Books.jsx
       // will keep the Books view updated when a new book is added
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(newBook),
-        };
-      });
+      // cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+      //   return {
+      //     allBooks: allBooks.concat(newBook),
+      //   };
+      // });
+      updateBookCache(cache, { query: ALL_BOOKS }, newBook);
 
       cache.updateQuery({ query: ALL_AUTHORS }, ({ allAuthors }) => {
         const authorExists = allAuthors.some(
@@ -51,7 +53,7 @@ const NewBook = ({ show, setMessage }) => {
           };
         }
 
-        return allAuthors;
+        return { allAuthors };
       });
     },
     onError: (error) => {
