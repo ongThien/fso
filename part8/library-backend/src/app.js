@@ -1,21 +1,39 @@
-const { startStandaloneServer } = require("@apollo/server/standalone");
+const { ApolloServer } = require("@apollo/server");
+const { expressMiddleware } = require("@apollo/server/express4");
+const {
+  ApolloServerPluginDrainHttpServer,
+} = require("@apollo/server/plugin/drainHttpServer");
+const express = require("express");
+const cors = require("cors");
+const http = require("http");
 const jwt = require("jsonwebtoken");
-const server = require("./server");
+const schema = require("./graphql/index");
 const User = require("./models/user");
 const connectDB = require("./db");
 const { PORT, JWT_SECRET } = require("./config/config");
 const logger = require("./utils/logger");
 
 const startServer = async () => {
-  try {
-    // connect to mongoDB
-    await connectDB();
+  await connectDB();
 
-    const { url } = await startStandaloneServer(server, {
-      listen: { port: Number(PORT) },
-      context: async ({ req, res }) => {
+  const app = express();
+  const httpServer = http.createServer(app);
+
+  const server = new ApolloServer({
+    schema,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+
+  await server.start();
+
+  app.use(
+    "/",
+    cors(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
         const auth = req ? req.headers.authorization : null;
-        
+
         if (auth && auth.startsWith("Bearer ")) {
           const [_, token] = auth.split(" ");
           const decodedToken = jwt.verify(token, JWT_SECRET);
@@ -25,12 +43,12 @@ const startServer = async () => {
           return { currentUser };
         }
       },
-    });
+    })
+  );
 
-    logger.info(`Server ready at ${url}`);
-  } catch (error) {
-    logger.error("SOMETHING WENT WRONG", error);
-  }
+  httpServer.listen(PORT, () => {
+    logger.info(`Server is running on http://localhost:${PORT}`);
+  });
 };
 
 startServer();
