@@ -13,6 +13,7 @@ const schema = require("./graphql/index");
 const User = require("./models/user");
 const connectDB = require("./db");
 const { PORT, JWT_SECRET } = require("./config/config");
+const { userLoader, bookCountLoader } = require("../src/utils/dataLoader");
 const logger = require("./utils/logger");
 
 // From https://www.apollographql.com/docs/apollo-server/data/subscriptions :
@@ -57,14 +58,16 @@ const startServer = async () => {
       context: async ({ req }) => {
         const auth = req ? req.headers.authorization : null;
 
+        let currentUser = null;
         if (auth && auth.startsWith("Bearer ")) {
           const [_, token] = auth.split(" ");
           const decodedToken = jwt.verify(token, JWT_SECRET);
-
-          const currentUser = await User.findById(decodedToken.id);
+          // logger.info("DECODED TOKEN", decodedToken)
+          currentUser = await userLoader.load(decodedToken.username);
           // logger.info("USER", currentUser)
-          return { currentUser };
         }
+
+        return { currentUser, bookCountLoader };
       },
     })
   );

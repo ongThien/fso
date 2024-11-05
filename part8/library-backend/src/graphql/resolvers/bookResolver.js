@@ -11,11 +11,9 @@ const logger = require("../../utils/logger");
 const { PubSub } = require("graphql-subscriptions");
 const pubsub = new PubSub();
 
-const bookCount = async () => Book.collection.countDocuments();
-
 const bookResolvers = {
   Query: {
-    bookCount,
+    bookCount: async () => await Book.collection.countDocuments(),
     allBooks: async (root, { author, genre }) => {
       const query = {};
       if (author) {
