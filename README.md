@@ -43,6 +43,7 @@ The repository is organized into different directories, each corresponding to a 
 ├── part6 Advanced state management
 ├── part7 React router, custom hooks, styling app with CSS and webpack
 ├── part8 GraphQL
+├── part9 Typescript
 └── README.md
 ```
 
