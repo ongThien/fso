@@ -7,6 +7,12 @@ export const useNotificationValue = () => {
 };
 
 export const useNotificationDispatch = () => {
-  const notiAndDispatch = useContext(NotificationContext);
-  return notiAndDispatch[1];
+  const [_, dispatch] = useContext(NotificationContext);
+  return (notiObject) => {
+    dispatch(notiObject);
+    const timer = 5000;
+    setTimeout(() => {
+      dispatch({ type: "CLEAR" });
+    }, timer);
+  };
 };

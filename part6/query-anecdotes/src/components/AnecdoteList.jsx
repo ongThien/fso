@@ -39,13 +39,13 @@ const AnecdoteList = () => {
           anec.id === updatedAnecdote.id ? updatedAnecdote : anec
         )
       );
+
+      dispatch({ type: "VOTE", payload: updatedAnecdote.content });
     },
   });
 
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 });
-    dispatch({ type: "VOTE", payload: anecdote.content });
-    setTimeout(() => dispatch({ type: "CLEAR" }), 5000);
   };
 
   const result = useQuery({
