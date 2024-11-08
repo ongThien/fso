@@ -1,3 +1,5 @@
+import { parseArguments } from "./utils/utils";
+
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -25,6 +27,9 @@ const calculateExercise = (
   };
 };
 
-console.log(calculateExercise(2, [3, 0, 2, 4.5, 0, 3, 1]));
+const { firstArg: targetValue, rest: exerciseHours } = parseArguments(
+  process.argv
+);
+console.log(calculateExercise(targetValue, exerciseHours));
 
 export default calculateExercise;
