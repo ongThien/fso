@@ -1,4 +1,7 @@
-POST http://localhost:3000/exercises
+GET http://localhost:3000/bmi?height=180&weight=72 HTTP/1.1
+
+###
+POST http://localhost:3000/exercises HTTP/1.1
 Content-Type: application/json
 
 {

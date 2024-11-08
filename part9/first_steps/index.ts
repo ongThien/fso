@@ -17,15 +17,19 @@ app.get("/hello", (_req, res) => {
 });
 
 app.get("/bmi", (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
 
+  // validating data
   const { height, weight } = {
     height: Number(req.query.height),
     weight: Number(req.query.weight),
   };
 
-  if (!height || !weight)
+  if (isNaN(height) || isNaN(weight)) {
     res.status(400).json({ error: "malformatted parameters" });
+  }
+
+  if (!height || !weight) res.status(400).json({ error: "parameters missing" });
 
   res.status(200).json({ height, weight, bmi: calculateBMI(height, weight) });
 });
