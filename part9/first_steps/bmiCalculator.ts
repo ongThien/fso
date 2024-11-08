@@ -4,9 +4,11 @@ const calculateBMI = (height: number, mass: number): string => {
   if (height <= 0)
     throw new Error(`Invalid height (in centimeters): ${height}`);
 
+  if (mass <= 0) throw new Error(`Invalid weight (in kilograms): ${mass}`);
+
   const bmi = mass / Math.pow(height / 100, 2);
 
-  console.log("BMI:", bmi);
+  // console.log("BMI:", bmi);
 
   switch (true) {
     case bmi < 16.0:
@@ -32,17 +34,22 @@ const calculateBMI = (height: number, mass: number): string => {
   }
 };
 
-try {
-  const { firstArg: height, rest } = parseArguments(process.argv);
-  if (rest.length !== 1) throw new Error("Usage: npm run calculateBmi <height (in centimeters)> <mass (in kilograms)>");
-  const [mass] = rest;
-  console.log(calculateBMI(height, mass));
-} catch (error: unknown) {
-  let errorMsg = "Invalid arguments. ";
-  if (error instanceof Error) {
-    errorMsg += error.message;
+if (require.main === module) {
+  try {
+    const { firstArg: height, rest } = parseArguments(process.argv);
+    if (rest.length !== 1)
+      throw new Error(
+        "Usage: npm run calculateBmi <height (in centimeters)> <mass (in kilograms)>"
+      );
+    const [mass] = rest;
+    console.log(calculateBMI(height, mass));
+  } catch (error: unknown) {
+    let errorMsg = "Invalid arguments. ";
+    if (error instanceof Error) {
+      errorMsg += error.message;
+    }
+    console.log(errorMsg);
   }
-  console.log(errorMsg);
 }
 
 export default calculateBMI;

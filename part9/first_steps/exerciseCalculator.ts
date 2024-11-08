@@ -14,6 +14,7 @@ const calculateExercise = (
   targetValue: number,
   exerciseHours: number[]
 ): Result => {
+
   return {
     periodLength: exerciseHours.length,
     trainingDays: exerciseHours.filter((hours) => hours !== 0).length,
@@ -22,7 +23,7 @@ const calculateExercise = (
     ratingDescription: "not too bad but could be better",
     target: targetValue,
     average:
-      exerciseHours.reduce((total, cur) => total + cur, 0) /
+      exerciseHours?.reduce((total, cur) => total + cur, 0) /
       exerciseHours.length,
   };
 };
