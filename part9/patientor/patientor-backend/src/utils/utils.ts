@@ -1,5 +1,5 @@
 import z from "zod";
-import { Diagnose, Gender, PatientEntry } from "../types";
+import { Diagnose, Gender, NewPatientEntry } from "../types";
 
 const DiagnoseSchema = z.object({
   code: z.string(),
@@ -11,8 +11,7 @@ export const toDiagnose = (obj: unknown): Diagnose =>
   DiagnoseSchema.parse(obj);
 
 
-const PatientSchema = z.object({
-  id: z.string().uuid(),
+export const PatientSchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
   ssn: z.string(),
@@ -20,4 +19,4 @@ const PatientSchema = z.object({
   occupation: z.string(),
 });
 
-export const toPatient = (obj: unknown): PatientEntry => PatientSchema.parse(obj);
+export const toPatient = (obj: unknown): NewPatientEntry => PatientSchema.parse(obj);

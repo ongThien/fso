@@ -44,8 +44,9 @@ const data = [
   },
 ];
 
-const patientEntries: Array<PatientEntry> = data.map(obj => {
-  const patient = toPatient(obj);
+const patientEntries: Array<PatientEntry> = data.map((obj) => {
+  const patient = toPatient(obj) as PatientEntry;
+  patient.id = obj.id;
   return patient;
 });
 

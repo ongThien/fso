@@ -327,3 +327,85 @@ With this, ssn is not included in the response:
 
 and the frontend is able to fetch data from the server:
 ![](./imgs/step4-2.png)
+
+## 9.12: Patientor backend, step5
+**Requirement**
+- Create a POST endpoint `/api/patients` for adding patients. Ensure that you can add patients also from the frontend.
+
+**How I did it:**
+For POST endpoint `/api/patients`, we need to expand patientRouter and patientService.
+```typescript
+router.post(
+  "/",
+  newPatientParser,
+  (
+    req: Request<unknown, unknown, NewPatientEntry>,
+    res: Response<NonSensitivePatientEntry>
+  ) => {
+    const newPatient = patientService.addPatient(req.body);
+    res.status(201).json(newPatient);
+  }
+);
+```
+and I want to return the newPatient data without the SSN
+```typescript
+import { v4 as uuidv4 } from "uuid";
+
+const addPatient = (patient: NewPatientEntry): NonSensitivePatientEntry => {
+  const newPatientEntry = {
+    id: uuidv4(),
+    ...patient,
+  };
+  patientEntries.push(newPatientEntry);
+  const { id, name, dateOfBirth, gender, occupation } = newPatientEntry;
+  return { id, name, dateOfBirth, gender, occupation };
+};
+```
+
+## 9.13: Patientor backend, step6
+**Requirement**
+- Set up safe parsing, validation and type predicate to the POST `/api/patients` request.
+- Refactor the gender field to use an enum type.
+
+**How I did it:**
+I didn't do the manual safe parsing, validation and type predicate... I used Zod to validate data straight away.
+As per the gender field, I created it using enum in exercise 9.11 step4.
+```typescript
+export enum Gender {
+  Male = "male",
+  Female = "female",
+  Other = "other",
+}
+
+export type UUID = string;
+
+export interface PatientEntry {
+  id: UUID;
+  name: string;
+  dateOfBirth: string;
+  ssn: string;
+  gender: Gender;
+  occupation: string;
+}
+```
+## 9.14: Patientor backend, step7
+**Requirement**
+- Use Zod to validate the requests to the POST endpoint `/api/patients`.
+
+**How I did it:**
+I created a middleware to validate the request to the POST endpoint `api/patients`.
+```typescript
+import { Request, Response, NextFunction } from "express";
+import { PatientSchema } from "../utils/utils";
+
+const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    PatientSchema.parse(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export default newPatientParser;
+```
