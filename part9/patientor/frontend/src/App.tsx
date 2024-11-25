@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { Route, Link, Routes, useMatch } from "react-router-dom";
 import { Button, Divider, Container, Typography } from '@mui/material';
 
-import { apiBaseUrl } from "./constants";
+// import { apiBaseUrl } from "./constants";
 import { Patient } from "./types";
 
 import patientService from "./services/patients";
@@ -17,7 +17,7 @@ const App = () => {
   const patient = match && patients.find(p => p.id === match.params.id);
 
   useEffect(() => {
-    void axios.get<void>(`${apiBaseUrl}/ping`);
+    // void axios.get<void>(`${apiBaseUrl}/ping`);
 
     const fetchPatientList = async () => {
       const patients = await patientService.getAll();

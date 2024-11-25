@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { Entry, Patient } from "../../types";
+import diagnoseServices from "../../services/diagnoses";
+
+import { Diagnosis, Entry, Patient } from "../../types";
 
 interface PatientPageProps {
   patient: Patient | null | undefined;
@@ -26,7 +29,7 @@ interface EntriesProps {
 }
 
 const Entries = ({ entries }: EntriesProps) => {
-  console.log("ENTRIES", entries);
+  // console.log("ENTRIES", entries);
 
   if (entries.length === 0) return <p>No entry found.</p>
 
@@ -45,8 +48,29 @@ interface DiagnosisListProps {
 }
 
 const DiagnosisList = ({ diagnosisCodes }: DiagnosisListProps) => {
+  // console.log("DIACODE:", diagnosisCodes);
+
+  const [diagnosis, setDiagnosis] = useState<Array<Diagnosis>>([]);
+
+  useEffect(() => {
+    const getDiagnosis = async () => {
+      const data = await diagnoseServices.getAll();
+      // console.log(data);
+      const entryDiagnoses = diagnosisCodes.map((code) => {
+        const diagnosis = data.find(d => code === d.code);
+        // console.log("entry", entry);
+        return diagnosis;
+      }).filter((diagnosis) => diagnosis !== undefined);
+
+      setDiagnosis(entryDiagnoses);
+
+    }
+
+    void getDiagnosis();
+  }, []);
+
   return <ul>
-    {diagnosisCodes?.map((code, id) => <li key={id}>{code}</li>)}
+    {diagnosis.map((d) => <li key={d.code}>{d.code} {d.name}</li>)}
   </ul>
 }
 
