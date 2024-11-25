@@ -1,8 +1,8 @@
 import z from "zod";
-import { PatientSchema } from "./utils/utils";
+import { EntrySchema, PatientSchema } from "./utils/utils";
 import { UUIDTypes } from "uuid";
 
-export interface Diagnose {
+export interface Diagnosis {
   code: string;
   name: string;
   latin?: string;
@@ -14,9 +14,45 @@ export enum Gender {
   Other = "other",
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Entry {
+export enum HealthCheckRating {
+  "Healthy" = 0,
+  "LowRisk" = 1,
+  "HighRisk" = 2,
+  "CriticalRisk" = 3
 }
+
+// interface BaseEntry {
+//   id: string;
+//   description: string;
+//   date: string;
+//   specialist: string;
+//   diagnosisCodes?: Array<Diagnosis["code"]>;
+// }
+
+// interface HospitalEntry extends BaseEntry {
+//   type: "Hospital";
+//   discharge: {
+//     date: string;
+//     criteria: string;
+//   };
+// }
+
+// interface OccupationalHealthcareEntry extends BaseEntry {
+//   type: "OccupationalHealthcare";
+//   employerName: string;
+//   sickLeave?: {
+//     startDate: string;
+//     endDate: string;
+//   }
+// }
+
+// interface HealthCheckEntry extends BaseEntry {
+//   type: "HealthCheck";
+//   healthCheckRating: HealthCheckRating;
+// }
+
+// is using zod z.infer<typeof Schema> considered a good practice?
+export type Entry = z.infer<typeof EntrySchema>;
 
 export interface Patient {
   id: UUIDTypes;
@@ -25,7 +61,7 @@ export interface Patient {
   occupation: string;
   gender: Gender;
   dateOfBirth: string;
-  entries: Entry[]
+  entries: Array<Entry>;
 }
 
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
