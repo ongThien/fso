@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import React from "react";
 import { Box, Typography } from "@mui/material";
-import diagnoseServices from "../../services/diagnoses";
 
-import { Diagnosis, Entry, Patient } from "../../types";
+import { LocalHospital, MonitorHeart, Favorite } from '@mui/icons-material';
+
+import { Entry, Patient, IHospitalEntry, IOccupationalHealthcareEntry, IHealthCheckEntry } from "../../types";
+
+const assertNever = (value: any): never => {
+  throw new Error(`Unhandle discriminated union: ${JSON.stringify(value)}`);
+}
 
 interface PatientPageProps {
   patient: Patient | null | undefined;
@@ -10,10 +15,10 @@ interface PatientPageProps {
 
 const PatientPage = ({ patient }: PatientPageProps) => {
 
-  if (!patient) return <p>Could not found this patient record.</p>
+  if (!patient) return <p>No record of this patient.</p>
 
   return <Box sx={{ marginTop: 8 }}>
-    <Typography variant="h5">{patient?.name}</Typography>
+    <Typography variant="h5">{patient.name}</Typography>
     <p>D.O.B: {patient.dateOfBirth}</p>
     <p>gender: {patient.gender}</p>
     <p>ssn: {patient.ssn}</p>
@@ -24,54 +29,116 @@ const PatientPage = ({ patient }: PatientPageProps) => {
   </Box>
 };
 
-interface EntriesProps {
-  entries: Array<Entry> | [];
-}
-
 const Entries = ({ entries }: EntriesProps) => {
   // console.log("ENTRIES", entries);
 
   if (entries.length === 0) return <p>No entry found.</p>
 
   return <>
-    {entries.map((e) => {
-      return <div key={e.id}>
-        <p>{e.date} {e.description}</p>
-        {e.diagnosisCodes && <DiagnosisList diagnosisCodes={e.diagnosisCodes} />}
-      </div>
-    })}
+    {entries.map((entry) => <EntryDetails key={entry.id} entry={entry} />)}
   </>
 }
 
-interface DiagnosisListProps {
-  diagnosisCodes: string[];
+interface EntriesProps {
+  entries: Array<Entry>;
 }
 
-const DiagnosisList = ({ diagnosisCodes }: DiagnosisListProps) => {
-  // console.log("DIACODE:", diagnosisCodes);
+interface EntryDetailsProps {
+  entry: Entry;
+}
 
-  const [diagnosis, setDiagnosis] = useState<Array<Diagnosis>>([]);
+interface HospitalEntryProps {
+  entry: IHospitalEntry;
+}
 
-  useEffect(() => {
-    const getDiagnosis = async () => {
-      const data = await diagnoseServices.getAll();
-      // console.log(data);
-      const entryDiagnoses = diagnosisCodes.map((code) => {
-        const diagnosis = data.find(d => code === d.code);
-        // console.log("entry", entry);
-        return diagnosis;
-      }).filter((diagnosis) => diagnosis !== undefined);
+interface OccupationalHealthcareEntryProps {
+  entry: IOccupationalHealthcareEntry
+}
 
-      setDiagnosis(entryDiagnoses);
+interface HealthCheckEntryProps {
+  entry: IHealthCheckEntry;
+}
 
+interface EntryBaseProps {
+  date: string;
+  icon: React.ReactNode;
+  description: string;
+  specialist: string;
+  employerName?: string;
+  healthCheckRating?: number;
+  additionalInfo?: string;
+}
+
+const EntryDetails = ({ entry }: EntryDetailsProps) => {
+
+  switch (entry.type) {
+    case "Hospital":
+      return <HospitalEntry entry={entry} />;
+    case "OccupationalHealthcare":
+      return <OccupationalHealthcareEntry entry={entry} />;
+    case "HealthCheck":
+      return <HealthCheckEntry entry={entry} />;
+    default:
+      return assertNever(entry);
+  }
+}
+
+const EntryBase = ({ date, icon, description, specialist, employerName, healthCheckRating }: EntryBaseProps) => {
+
+  const getHealthCheckRatingColor = (rating: number): "primary" | "secondary" | "error" | "warning" => {
+    switch (rating) {
+      case 0:
+        return "primary";
+      case 1:
+        return "secondary";
+      case 2:
+        return "warning";
+      case 3:
+        return "error";
+      default:
+        return assertNever(rating);
     }
+  };
 
-    void getDiagnosis();
-  }, []);
-
-  return <ul>
-    {diagnosis.map((d) => <li key={d.code}>{d.code} {d.name}</li>)}
-  </ul>
+  return <div style={{
+    border: 1,
+    borderStyle: "solid",
+    borderColor: "#333",
+    marginBottom: 4,
+    padding: 4,
+  }}>
+    <p>{date} {icon} {employerName && employerName}</p>
+    <p><i>{description}</i></p>
+    {(healthCheckRating !== undefined) && <p><Favorite color={getHealthCheckRatingColor(healthCheckRating)} /> healthcheck rating: {healthCheckRating}</p>}
+    <p>diagnosed by {specialist}</p>
+  </div>
 }
+
+const HospitalEntry = ({ entry }: HospitalEntryProps) => {
+  return <EntryBase
+    date={entry.date}
+    icon={<LocalHospital />}
+    description={entry.description}
+    specialist={entry.specialist} />
+
+};
+
+const OccupationalHealthcareEntry = ({ entry }: OccupationalHealthcareEntryProps) => {
+  return <EntryBase
+    date={entry.date}
+    icon={<MonitorHeart />}
+    description={entry.description}
+    specialist={entry.specialist}
+    employerName={entry.employerName} />
+};
+
+const HealthCheckEntry = ({ entry }: HealthCheckEntryProps) => {
+  return <EntryBase
+    date={entry.date}
+    icon={<LocalHospital />}
+    description={entry.description}
+    specialist={entry.specialist}
+    healthCheckRating={entry.healthCheckRating} />
+};
 
 export default PatientPage;
