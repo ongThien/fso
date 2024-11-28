@@ -19,6 +19,7 @@ const baseEntrySchema = z.object({
   date: z.string(),
   specialist: z.string(),
   diagnosisCodes: z.array(z.string()).optional(), // Optional diagnosis codes
+
 });
 
 // Hospital Entry schema
@@ -27,13 +28,13 @@ const hospitalEntrySchema = baseEntrySchema.extend({
   discharge: z.object({
     date: z.string(),
     criteria: z.string(),
-  }),
+  }).optional(),
 });
 
 // Occupational Healthcare Entry schema
 const occupationalHealthcareEntrySchema = baseEntrySchema.extend({
   type: z.literal('OccupationalHealthcare'),
-  employerName: z.string(),
+  employerName: z.string().optional(),
   sickLeave: z.object({
     startDate: z.string(),
     endDate: z.string(),
@@ -53,13 +54,20 @@ export const EntrySchema = z.union([
   healthCheckEntrySchema,
 ]);
 
+// to be used in the creation of patient's new entry
+export const EntrySchemaWithoutID = z.union([
+  hospitalEntrySchema.omit({id: true}),
+  occupationalHealthcareEntrySchema.omit({id: true}),
+  healthCheckEntrySchema.omit({id: true}),
+]);
+
 export const PatientSchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
   ssn: z.string(),
   gender: z.nativeEnum(Gender),
   occupation: z.string(),
-  entries: z.array(EntrySchema),
+  entries: z.array(EntrySchema).optional(),
 });
 
 export const toPatient = (obj: unknown): NewPatient => PatientSchema.parse(obj);

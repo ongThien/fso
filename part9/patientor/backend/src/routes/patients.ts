@@ -1,8 +1,11 @@
 import express, { Request, Response } from "express";
-import patientService from "../services/patientService";
+
 import newPatientParser from "../middlewares/newPatientParser";
-import { NewPatient, NonSensitivePatient, Patient } from "../types";
+import newPatientEntryParser from "../middlewares/newPatientEntryParser";
+import patientService from "../services/patientService";
 import errorHandler from "../middlewares/errorHandler";
+
+import { NewPatient, NonSensitivePatient, Patient } from "../types";
 
 const router = express.Router();
 
@@ -21,6 +24,18 @@ router.get("/:id", (req: Request, res: Response<Patient>) => {
   } else {
     res.status(404);
   }
+});
+
+router.post("/:id/entries", newPatientEntryParser, (req, res) => {
+  // console.log("ID", req.params.id);
+  // console.log("ENTRY", req.body);
+
+  const newPatientEntry = patientService.addPatientEntry(req.params.id, req.body);
+  if (!newPatientEntry) {
+    res.status(400).end();
+    return;
+  }
+  res.status(201).json(newPatientEntry);
 });
 
 router.post(

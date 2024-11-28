@@ -1,9 +1,12 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useState } from "react";
+import axios from "axios";
 
+import { Box, Button, Typography } from "@mui/material";
 import { LocalHospital, MonitorHeart, Favorite } from '@mui/icons-material';
+import AddPatientEntryModal from "../AddPatientEntryModal";
 
-import { Entry, Patient, IHospitalEntry, IOccupationalHealthcareEntry, IHealthCheckEntry } from "../../types";
+import patientEntriesServices from "../../services/patientEntries";
+import { Entry, EntryWithoutID, Patient, IHospitalEntry, IOccupationalHealthcareEntry, IHealthCheckEntry, Gender } from "../../types";
 
 const assertNever = (value: any): never => {
   throw new Error(`Unhandle discriminated union: ${JSON.stringify(value)}`);
@@ -14,25 +17,81 @@ interface PatientPageProps {
 }
 
 const PatientPage = ({ patient }: PatientPageProps) => {
-
   if (!patient) return <p>No record of this patient.</p>
 
-  return <Box sx={{ marginTop: 8 }}>
-    <Typography variant="h5">{patient.name}</Typography>
-    <p>D.O.B: {patient.dateOfBirth}</p>
-    <p>gender: {patient.gender}</p>
-    <p>ssn: {patient.ssn}</p>
-    <p>occupation: {patient.occupation}</p>
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+  const [entries, setEntries] = useState(patient.entries);
 
-    <Typography variant="h6">entries</Typography>
-    <Entries entries={patient.entries} />
+  const { id, name, dateOfBirth, gender, ssn, occupation } = patient;
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const submitNewEntry = async (values: EntryWithoutID) => {
+    try {
+      const entry = await patientEntriesServices.create(id, values);
+      setEntries(entries.concat(entry));
+      setModalOpen(false);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        console.log("ERROR", e);
+
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  }
+
+  return <Box sx={{ marginTop: 4 }}>
+    <PatientInfo {...{ name, dateOfBirth, gender, ssn, occupation }} />
+
+    <Box sx={{ marginTop: 8 }}>
+      <Typography variant="h6">entries</Typography>
+      <Entries entries={entries} />
+    </Box>
+    <AddPatientEntryModal modalOpen={modalOpen} onClose={closeModal} onSubmit={submitNewEntry} error={error} />
+    <Button variant="contained" sx={{ marginTop: 4 }} onClick={() => openModal()}>
+      Add New Entry
+    </Button>
   </Box>
 };
+
+interface PatientInfoProps {
+  name: string;
+  gender: Gender;
+  occupation: string;
+  ssn?: string;
+  dateOfBirth?: string;
+}
+
+const PatientInfo = ({ name, dateOfBirth, gender, ssn, occupation }: PatientInfoProps) => {
+
+  return <>
+    <Typography variant="h5">{name}</Typography>
+    <p>D.O.B: {dateOfBirth ? dateOfBirth : "N/A"}</p>
+    <p>gender: {gender}</p>
+    {ssn && <p>ssn: {ssn}</p>}
+    <p>occupation: {occupation}</p>
+  </>
+}
 
 const Entries = ({ entries }: EntriesProps) => {
   // console.log("ENTRIES", entries);
 
-  if (entries.length === 0) return <p>No entry found.</p>
+  if (!entries || entries.length === 0) return <p>No entry found.</p>
 
   return <>
     {entries.map((entry) => <EntryDetails key={entry.id} entry={entry} />)}
@@ -107,7 +166,7 @@ const EntryBase = ({ date, icon, description, specialist, employerName, healthCh
     marginBottom: 4,
     padding: 4,
   }}>
-    <p>{date} {icon} {employerName && employerName}</p>
+    <p>{icon} {date} {employerName && employerName}</p>
     <p><i>{description}</i></p>
     {(healthCheckRating !== undefined) && <p><Favorite color={getHealthCheckRatingColor(healthCheckRating)} /> healthcheck rating: {healthCheckRating}</p>}
     <p>diagnosed by {specialist}</p>

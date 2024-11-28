@@ -1,5 +1,5 @@
 import z from "zod";
-import { EntrySchema, PatientSchema } from "./utils/utils";
+import { EntrySchema, EntrySchemaWithoutID, PatientSchema } from "./utils/utils";
 import { UUIDTypes } from "uuid";
 
 export interface Diagnosis {
@@ -53,6 +53,7 @@ export enum HealthCheckRating {
 
 // is using zod z.infer<typeof Schema> considered a good practice?
 export type Entry = z.infer<typeof EntrySchema>;
+export type EntryWithoutID = z.infer<typeof EntrySchemaWithoutID>;
 
 export interface Patient {
   id: UUIDTypes;
