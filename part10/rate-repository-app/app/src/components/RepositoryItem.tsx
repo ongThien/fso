@@ -1,5 +1,6 @@
 import { Image, StyleSheet, View } from "react-native";
 
+import Constants from 'expo-constants';
 import Text from "./Text";
 import theme from "../theme";
 
@@ -21,7 +22,9 @@ const styles = StyleSheet.create({
   mainContaner: {
     display: "flex",
     backgroundColor: theme.colors.white,
-    padding: 8,
+    padding: Constants.statusBarHeight,
+    width: "auto",
+    gap: 8,
   },
   columnContainer: {
     display: "flex",
@@ -44,7 +47,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 4,
     padding: 4,
-    margin: 4
+    // margin: 4
   },
   itemInfoText: {
     padding: 4,
@@ -60,15 +63,17 @@ const styles = StyleSheet.create({
 
 const RepositoryItem = ({ item }: RepositoryItemProps) => {
 
-  return <View style={styles.mainContaner}>
-    <ItemInfo item={item} />
-    <View style={styles.statListContainer}>
-      <ItemStat statName="Stars" stat={formatStat(item.stargazersCount)} />
-      <ItemStat statName="Forks" stat={formatStat(item.forksCount)} />
-      <ItemStat statName="Reviews" stat={formatStat(item.reviewCount)} />
-      <ItemStat statName="Rating" stat={formatStat(item.ratingAverage)} />
+  return (
+    <View style={styles.mainContaner}>
+      <ItemInfo item={item} />
+      <View style={styles.statListContainer}>
+        <ItemStat statName="Stars" stat={formatStat(item.stargazersCount)} />
+        <ItemStat statName="Forks" stat={formatStat(item.forksCount)} />
+        <ItemStat statName="Reviews" stat={formatStat(item.reviewCount)} />
+        <ItemStat statName="Rating" stat={formatStat(item.ratingAverage)} />
+      </View>
     </View>
-  </View>
+  );
 };
 
 const ItemInfo = ({ item }: RepositoryItemProps) => {

@@ -8,8 +8,7 @@ import theme from '../theme';
 
 const styles = StyleSheet.create({
   container: {
-    // marginTop: Constants.statusBarHeight,
-    backgroundColor: theme.colors.backgorundSecondary,
+    backgroundColor: theme.colors.backgroundSecondary,
     flexGrow: 1,
     flexShrink: 1,
   },

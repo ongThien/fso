@@ -9,7 +9,7 @@ export default function Index() {
       <NativeRouter>
         <Main />
       </NativeRouter>
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}
     </>
   );
 }

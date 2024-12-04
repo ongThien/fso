@@ -6,10 +6,9 @@ import theme from '../theme';
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: Constants.statusBarHeight,
+    // paddingTop: Constants.statusBarHeight,
     display: "flex",
     flexDirection: "row",
-    gap: 4,
     backgroundColor: theme.colors.backgroundPrimary,
   },
   // ...
