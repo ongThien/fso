@@ -41,7 +41,8 @@
     "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.12.2",
-    "react-router-native": "^6.28.0"
+    "react-router-native": "^6.28.0",
+    "yup": "^1.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

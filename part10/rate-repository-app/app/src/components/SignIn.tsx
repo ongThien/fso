@@ -2,6 +2,8 @@ import { View, TextInput, Pressable, StyleSheet } from 'react-native';
 import { FormikHelpers, useFormik } from 'formik';
 import Constants from "expo-constants";
 
+import * as yup from "yup";
+
 import Text from './Text';
 import theme from '../theme';
 
@@ -33,6 +35,9 @@ const formStyles = StyleSheet.create({
     borderRadius: 4,
     borderColor: theme.colors.textSecondary,
   },
+  inputError: {
+    borderColor: theme.colors.errors,
+  },
   submitBtn: {
     backgroundColor: theme.colors.primary,
     textAlign: "center",
@@ -41,28 +46,45 @@ const formStyles = StyleSheet.create({
   }
 });
 
+const validationSchema = yup.object().shape({
+  username: yup.string().required("Username is required"),
+  password: yup.string().required("Password is required"),
+});
+
 const SignInForm = ({onSubmit}: SignInFormProps) => {
   const formik = useFormik({
     initialValues,
+    validationSchema,
     onSubmit
   });
 
   return (
     <View style={formStyles.mainContainer}>
       <TextInput
-        style={formStyles.input}
+        style={[formStyles.input, formik.touched.username && formik.errors.username && formStyles.inputError]}
         placeholder='Username'
         placeholderTextColor={theme.colors.textSecondary}
         value={formik.values.username}
         onChangeText={formik.handleChange("username")}
       />
+      {
+        formik.touched.username && formik.errors.username && (
+          <Text style={{color: theme.colors.errors}}>{formik.errors.username}</Text>
+        )
+      }
       <TextInput
-        style={formStyles.input}
+        style={[formStyles.input, formik.touched.password && formik.errors.password && formStyles.inputError]}
         placeholder='Password'
         placeholderTextColor={theme.colors.textSecondary}
         value={formik.values.password}
         onChangeText={formik.handleChange("password")}
-        secureTextEntry/>
+        secureTextEntry
+      />
+      {
+        formik.touched.password && formik.errors.password && (
+          <Text style={{color: theme.colors.errors}}>{formik.errors.password}</Text>
+        )
+      }
 
       <Pressable onPress={() => formik.handleSubmit()}>
         <Text
