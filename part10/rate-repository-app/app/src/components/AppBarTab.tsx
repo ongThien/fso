@@ -1,9 +1,12 @@
-import { Pressable, StyleSheet, View } from "react-native";
 import Constants from 'expo-constants';
+import { Pressable, StyleSheet, View } from "react-native";
+import { Link } from 'react-router-native';
+
 import Text from "./Text";
 
 interface AppBarTabProps {
   text: string;
+  linkTo: string;
 }
 
 const styles = StyleSheet.create({
@@ -12,10 +15,12 @@ const styles = StyleSheet.create({
   }
 });
 
-const AppBarTab = ({text}: AppBarTabProps) => {
+const AppBarTab = ({ text, linkTo }: AppBarTabProps) => {
   return <View style={styles.container}>
-    <Pressable onPress={() => { }}>
-      <Text color="white" fontWeight='bold' fontSize='subheading'>{text}</Text>
+    <Pressable onPress={() => {}}>
+      <Link to={linkTo}>
+        <Text color="white" fontWeight='bold' fontSize='subheading'>{text}</Text>
+      </Link>
     </Pressable>
   </View>
 }
