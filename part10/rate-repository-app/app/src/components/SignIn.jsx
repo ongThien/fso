@@ -3,23 +3,15 @@ import { FormikHelpers, useFormik } from 'formik';
 import Constants from "expo-constants";
 
 import * as yup from "yup";
+import useSignIn from "../hooks/useSignIn";
 
 import Text from './Text';
 import theme from '../theme';
 
-interface FormValues {
-  username: string;
-  password: string;
-}
-
-interface SignInFormProps {
-  onSubmit: (values: FormValues, formikHelpers: FormikHelpers<FormValues>) => void | Promise<any>;
-}
-
-const initialValues: FormValues = {
+const initialValues = {
   username: "",
   password: "",
-}
+};
 
 const formStyles = StyleSheet.create({
   mainContainer: {
@@ -51,7 +43,7 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
 });
 
-const SignInForm = ({onSubmit}: SignInFormProps) => {
+const SignInForm = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -69,7 +61,7 @@ const SignInForm = ({onSubmit}: SignInFormProps) => {
       />
       {
         formik.touched.username && formik.errors.username && (
-          <Text style={{color: theme.colors.errors}}>{formik.errors.username}</Text>
+          <Text style={{ color: theme.colors.errors }}>{formik.errors.username}</Text>
         )
       }
       <TextInput
@@ -82,7 +74,7 @@ const SignInForm = ({onSubmit}: SignInFormProps) => {
       />
       {
         formik.touched.password && formik.errors.password && (
-          <Text style={{color: theme.colors.errors}}>{formik.errors.password}</Text>
+          <Text style={{ color: theme.colors.errors }}>{formik.errors.password}</Text>
         )
       }
 
@@ -101,7 +93,18 @@ const SignInForm = ({onSubmit}: SignInFormProps) => {
 };
 
 export default function SignIn() {
-  const onSubmit = (values: FormValues) => console.log(values);
+  const [signIn] = useSignIn();
 
-  return <SignInForm onSubmit={onSubmit}/>;
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+
+    try {
+      const token = await signIn({ username, password });
+      console.log(token);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return <SignInForm onSubmit={onSubmit} />;
 }
