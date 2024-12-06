@@ -36,3 +36,12 @@ export const GET_ACCESS_TOKEN = gql`
     }
   }
 `;
+
+export const GET_USER_INFO = gql`
+  query {
+    me {
+      id
+      username
+    }
+  }
+`;
