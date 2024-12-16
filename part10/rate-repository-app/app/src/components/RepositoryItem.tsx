@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 const RepositoryItem = ({ item }: RepositoryItemProps) => {
 
   return (
-    <View style={styles.mainContaner}>
+    <View testID="repositoryItem" style={styles.mainContaner}>
       <ItemInfo item={item} />
       <View style={styles.statListContainer}>
         <ItemStat statName="Stars" stat={formatStat(item.stargazersCount)} />
@@ -110,7 +110,7 @@ const ItemStat = ({ statName, stat }: ItemStatProps) => {
   </View>
 }
 
-function formatStat(count: number): string {
+export function formatStat(count: number): string {
   if (count >= 1000) {
       return (count / 1000).toFixed(1) + 'k';
   } else {

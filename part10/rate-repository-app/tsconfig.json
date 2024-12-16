@@ -12,6 +12,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/src/components/RepositoryList.jsx", "app/src/hooks/useRepositories.js", "app/src/components/SignIn.jsx"  ]
+    "expo-env.d.ts",
+    "**/*.jsx",
+    "**/*.js",
+  ]
 }

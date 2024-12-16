@@ -1,5 +1,4 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
-import Constants from 'expo-constants';
 
 import useUserInfo from "../hooks/useUserInfo";
 import useSignOut from "../hooks/useSignOut";
@@ -18,14 +17,15 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-  const user = useUserInfo();
+  const { data, loading, error } = useUserInfo();
+
   // console.log("USER", user);
   const handleSignOut = useSignOut();
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
         <AppBarTab text='Repositories' linkTo='/' />
-        {user ? (
+        {data && data.me ? (
           <AppBarTab
             text='Sign Out'
             onPress={() => handleSignOut()} // Handle sign-out here

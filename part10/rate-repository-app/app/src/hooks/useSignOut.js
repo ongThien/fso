@@ -12,7 +12,6 @@ const useSignOut = () => {
       await authStorage.removeAccessToken();
       apolloClient.resetStore();
       navigate("/");
-      // console.log("TOKEN?:", await authStorage.getAccessToken());
     } catch (error) {
       console.log(error);
     }
