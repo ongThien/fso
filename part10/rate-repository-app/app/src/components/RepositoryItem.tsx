@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 import Constants from 'expo-constants';
 import Text from "./Text";
@@ -15,6 +15,64 @@ interface RepositoryItemProps {
     ratingAverage: number;
     reviewCount: number;
     ownerAvatarUrl: string;
+    url: string;
+  }
+}
+
+const RepositoryItem = ({ item }: RepositoryItemProps) => {
+
+  return (
+    <View testID="repositoryItem" style={styles.mainContaner}>
+        <ItemInfo item={item} />
+        <View style={styles.statListContainer}>
+          <ItemStat statName="Stars" stat={formatStat(item.stargazersCount)} />
+          <ItemStat statName="Forks" stat={formatStat(item.forksCount)} />
+          <ItemStat statName="Reviews" stat={formatStat(item.reviewCount)} />
+          <ItemStat statName="Rating" stat={formatStat(item.ratingAverage)} />
+        </View>
+      </View>
+  );
+};
+
+const ItemInfo = ({ item }: RepositoryItemProps) => {
+  return <View style={styles.itemInfoContainer}>
+    <Image
+      style={styles.itemInfoImage}
+      source={{ uri: item.ownerAvatarUrl }}
+    />
+    <View style={{ ...styles.columnContainer, ...styles.itemInfoText }}>
+      <Text fontWeight="bold">{item.fullName}</Text>
+      <Text color="textSecondary">{item.description}</Text>
+      <Text
+        color="white"
+        style={styles.itemInfoLanguage}
+      >
+        {item.language}
+      </Text>
+    </View>
+  </View>
+}
+
+interface ItemStatProps {
+  statName: string;
+  stat: string;
+}
+
+const ItemStat = ({ statName, stat }: ItemStatProps) => {
+  return <View style={{
+    ...styles.columnContainer,
+    alignItems: "center",
+  }}>
+    <Text color="textPrimary" fontWeight="bold">{stat}</Text>
+    <Text color="textSecondary">{statName}</Text>
+  </View>
+}
+
+export function formatStat(count: number): string {
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'k';
+  } else {
+    return count.toString();
   }
 }
 
@@ -22,9 +80,9 @@ const styles = StyleSheet.create({
   mainContaner: {
     display: "flex",
     backgroundColor: theme.colors.white,
-    padding: Constants.statusBarHeight,
     width: "auto",
     gap: 8,
+    padding: 16,
   },
   columnContainer: {
     display: "flex",
@@ -60,62 +118,5 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   }
 })
-
-const RepositoryItem = ({ item }: RepositoryItemProps) => {
-
-  return (
-    <View testID="repositoryItem" style={styles.mainContaner}>
-      <ItemInfo item={item} />
-      <View style={styles.statListContainer}>
-        <ItemStat statName="Stars" stat={formatStat(item.stargazersCount)} />
-        <ItemStat statName="Forks" stat={formatStat(item.forksCount)} />
-        <ItemStat statName="Reviews" stat={formatStat(item.reviewCount)} />
-        <ItemStat statName="Rating" stat={formatStat(item.ratingAverage)} />
-      </View>
-    </View>
-  );
-};
-
-const ItemInfo = ({ item }: RepositoryItemProps) => {
-  return <View style={styles.itemInfoContainer}>
-    <Image
-      style={styles.itemInfoImage}
-      source={{ uri: item.ownerAvatarUrl }}
-    />
-    <View style={{...styles.columnContainer, ...styles.itemInfoText}}>
-      <Text fontWeight="bold">{item.fullName}</Text>
-      <Text color="textSecondary">{item.description}</Text>
-      <Text
-        color="white"
-        style={styles.itemInfoLanguage}
-      >
-        {item.language}
-      </Text>
-    </View>
-  </View>
-}
-
-interface ItemStatProps {
-  statName: string;
-  stat: string;
-}
-
-const ItemStat = ({ statName, stat }: ItemStatProps) => {
-  return <View style={{
-    ...styles.columnContainer,
-    alignItems: "center",
-  }}>
-    <Text color="textPrimary" fontWeight="bold">{stat}</Text>
-    <Text color="textSecondary">{statName}</Text>
-  </View>
-}
-
-export function formatStat(count: number): string {
-  if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'k';
-  } else {
-      return count.toString();
-  }
-}
 
 export default RepositoryItem;

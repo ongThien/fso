@@ -1,4 +1,5 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
+import Constants from 'expo-constants';
 
 import useUserInfo from "../hooks/useUserInfo";
 import useSignOut from "../hooks/useSignOut";
@@ -9,8 +10,11 @@ import theme from '../theme';
 const styles = StyleSheet.create({
   container: {
     // paddingTop: Constants.statusBarHeight,
+    // height: Constants.statusBarHeight,
+    padding: 8,
     display: "flex",
     flexDirection: "row",
+    gap: 12,
     backgroundColor: theme.colors.backgroundPrimary,
   },
   // ...

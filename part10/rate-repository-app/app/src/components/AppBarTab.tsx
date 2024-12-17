@@ -12,7 +12,8 @@ interface AppBarTabProps {
 
 const styles = StyleSheet.create({
   container: {
-    padding: Constants.statusBarHeight,
+    // padding: Constants.statusBarHeight,
+    marginRight: 24,
   }
 });
 

@@ -16,8 +16,8 @@ const initialValues = {
 const formStyles = StyleSheet.create({
   mainContainer: {
     display: "flex",
-    padding: Constants.statusBarHeight,
     gap: 12,
+    padding: 24,
     backgroundColor: theme.colors.white,
   },
   input: {
