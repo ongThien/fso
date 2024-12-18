@@ -1,6 +1,5 @@
 import { View, TextInput, Pressable, StyleSheet } from 'react-native';
-import { FormikHelpers, useFormik } from 'formik';
-import Constants from "expo-constants";
+import { useFormik } from 'formik';
 
 import * as yup from "yup";
 import useSignIn from "../hooks/useSignIn";
@@ -43,7 +42,7 @@ const validationSchema = yup.object().shape({
   password: yup.string().required("Password is required"),
 });
 
-export const SignInForm = ({ onSubmit }) => {
+export const SignInFormDetail = ({ onSubmit }) => {
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -92,7 +91,7 @@ export const SignInForm = ({ onSubmit }) => {
   );
 };
 
-export default function SignIn() {
+export default function SignInForm() {
   const [signIn] = useSignIn();
 
   const onSubmit = async (values) => {
@@ -106,5 +105,5 @@ export default function SignIn() {
     }
   };
 
-  return <SignInForm onSubmit={onSubmit} />;
+  return <SignInFormDetail onSubmit={onSubmit} />;
 }

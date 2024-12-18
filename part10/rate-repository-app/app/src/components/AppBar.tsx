@@ -30,10 +30,16 @@ const AppBar = () => {
       <ScrollView horizontal>
         <AppBarTab text='Repositories' linkTo='/' />
         {data && data.me ? (
-          <AppBarTab
-            text='Sign Out'
-            onPress={() => handleSignOut()} // Handle sign-out here
-          />
+          <>
+            <AppBarTab
+              text="Create a review"
+              linkTo='/reviewForm'
+            />
+            <AppBarTab
+              text='Sign Out'
+              onPress={() => handleSignOut()} // Handle sign-out here
+            />
+          </>
         ) : (
           <AppBarTab text='Sign In' linkTo='/signin' />
         )}
