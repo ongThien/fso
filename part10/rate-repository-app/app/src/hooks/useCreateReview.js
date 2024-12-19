@@ -7,10 +7,10 @@ const useCreateReview = () => {
   const [mutate, result] = useMutation(CREATE_REVIEW);
   const navigate = useNavigate();
 
-  const createReview = async ({ repoOwner, repoName, rating, review }) => {
+  const createReview = async ({ ownerName, repositoryName, rating, text }) => {
     try {
       const response = await mutate({
-        variables: { review: { repoOwner, repoName, rating, review } }
+        variables: { review: { ownerName, repositoryName, rating, text } }
       });
 
       const { repositoryId } = response;

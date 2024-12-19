@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react-native";
 
 import { RepositoryListContainer } from "../../components/RepositoryList";
 import { formatStat } from "../../components/RepositoryItem";
+import { MemoryRouter } from "react-router-native";
 
 describe('RepositoryList', () => {
   describe('RepositoryListContainer', () => {
@@ -49,7 +50,13 @@ describe('RepositoryList', () => {
         ],
       };
 
-      render(<RepositoryListContainer repositories={repositories} />);
+      render(
+        // MemoryRouter needed to give context for useNavigate inside RepositoryListContainer
+        // are there any better way?
+        <MemoryRouter>
+          <RepositoryListContainer repositories={repositories} />
+        </MemoryRouter>
+      );
 
       const [firstItem, secondItem] = screen.getAllByTestId("repositoryItem");
       checkRepoFields(firstItem, repositories.edges[0].node);

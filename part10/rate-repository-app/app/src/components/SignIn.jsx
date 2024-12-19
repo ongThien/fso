@@ -77,14 +77,14 @@ export const SignInFormDetail = ({ onSubmit }) => {
         )
       }
 
-      <Pressable onPress={() => formik.handleSubmit()}>
+      <Pressable onPress={() => formik.handleSubmit()} disabled={formik.isSubmitting}>
         <Text
           color='white'
           fontWeight='bold'
           fontSize='subheading'
           style={formStyles.submitBtn}
         >
-          Sign in
+          {formik.isSubmitting ? "Loading..." : "Sign in"}
         </Text>
       </Pressable>
     </View>
