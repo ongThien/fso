@@ -14,6 +14,8 @@ const useSignIn = () => {
 
   const signIn = async ({ username, password }) => {
     try {
+      console.log("signIn called");
+
       const response = await mutate({
         variables: { credentials: { username, password } }
       });

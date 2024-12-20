@@ -74,6 +74,17 @@ export const CREATE_REVIEW = gql`
   }
 `;
 
+export const CREATE_USER = gql`
+  mutation CreateUser($user: CreateUserInput) {
+    createUser(user: $user) {
+      id
+      username
+      createdAt
+      reviewCount
+    }
+  }
+`;
+
 export const GET_USER_INFO = gql`
   query {
     me {

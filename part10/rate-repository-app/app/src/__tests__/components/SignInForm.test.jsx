@@ -1,11 +1,11 @@
 import { render, screen, waitFor, userEvent } from "@testing-library/react-native";
 
-import { SignInFormDetail } from "../../components/SignIn";
+import { SignInFormDetail } from "../../components/SignInForm";
 
+const mockOnSubmit = jest.fn();
 describe('SignInForm', () => {
   it('calls onSubmit function with correct arguments when a valid form is submitted', async () => {
     // render the SignInForm component
-    const mockOnSubmit = jest.fn();
     render(<SignInFormDetail onSubmit={mockOnSubmit} />);
     const usernameTextBox = screen.getByPlaceholderText(/username/i);
     const passwordTextBox = screen.getByPlaceholderText(/password/i);

@@ -98,8 +98,7 @@ export default function SignInForm() {
     const { username, password } = values;
 
     try {
-      const token = await signIn({ username, password });
-      console.log(token);
+      await signIn({ username, password });
     } catch (e) {
       console.log(e);
     }
