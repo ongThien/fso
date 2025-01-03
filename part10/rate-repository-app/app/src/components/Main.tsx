@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useDebounce, useDebouncedCallback } from "use-debounce";
 import { StyleSheet, View } from 'react-native';
 import { Navigate, Route, Routes } from 'react-router-native';
 
@@ -19,6 +21,7 @@ const styles = StyleSheet.create({
 });
 
 const Main = () => {
+
   return (
     <View style={styles.container}>
       <AppBar />
