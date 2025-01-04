@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
-  const { data, loading, error } = useUserInfo();
 
-  // console.log("USER", user);
+  const { data, loading, error } = useUserInfo();
   const handleSignOut = useSignOut();
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
@@ -34,6 +34,10 @@ const AppBar = () => {
             <AppBarTab
               text="Create a review"
               linkTo='/reviewForm'
+            />
+            <AppBarTab
+              text="My reviews"
+              linkTo='/reviewList'
             />
             <AppBarTab
               text='Sign Out'

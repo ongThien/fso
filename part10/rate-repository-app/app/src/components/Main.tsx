@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { useDebounce, useDebouncedCallback } from "use-debounce";
 import { StyleSheet, View } from 'react-native';
 import { Navigate, Route, Routes } from 'react-router-native';
 
@@ -7,8 +5,9 @@ import AppBar from './AppBar';
 import RepositoryList from './RepositoryList';
 import SingleRepositoryView from './SingleRepositoryView';
 import SignInForm from './SignInForm';
-import ReviewForm from './ReviewForm';
 import SignUpForm from './SignUpForm';
+import ReviewForm from './ReviewForm';
+import ReviewList from "./ReviewList";
 
 import theme from '../theme';
 
@@ -31,6 +30,7 @@ const Main = () => {
         <Route path="/signup" element={<SignUpForm />} />
         <Route path="/repos/:id" element={<SingleRepositoryView />} />
         <Route path="/reviewForm" element={<ReviewForm />} />
+        <Route path="/reviewList" element={<ReviewList />} />
         <Route path="*" element={<Navigate to={"/"} replace />}/>
       </Routes>
     </View>

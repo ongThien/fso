@@ -86,10 +86,31 @@ export const CREATE_USER = gql`
 `;
 
 export const GET_USER_INFO = gql`
-  query {
+  query getCurrentUser($includeReviews: Boolean = false) {
     me {
       id
       username
+      reviews @include(if: $includeReviews) {
+        edges {
+          node {
+            id
+            createdAt
+            rating
+            text
+            repository {
+              id
+              fullName
+              name
+            }
+          }
+        }
+      }
     }
+  }
+`;
+
+export const DELETE_REVIEW = gql`
+  mutation DeleteReview($id: ID!) {
+    deleteReview(id: $id)
   }
 `;

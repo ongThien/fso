@@ -50,24 +50,6 @@ export class RepositoryListContainer extends React.Component {
   }
 }
 
-// export const RepositoryListContainer = ({ repositories, ListHeaderComponent }) => {
-//   const navigate = useNavigate();
-//   const repositoryNodes = repositories ? repositories.edges.map(edge => edge.node) : [];
-
-//   return (
-//     <FlatList
-//       ListHeaderComponent={ListHeaderComponent}
-//       ItemSeparatorComponent={() => <View style={styles.separator} />}
-//       data={repositoryNodes}
-//       renderItem={({ item }) =>
-//         <Pressable onPress={() => navigate(`/repos/${item.id}`)}>
-//           <RepositoryItem key={item.id} item={item} />
-//         </Pressable>
-//       }
-//     />
-//   );
-// };
-
 const RepositoryList = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchKeywordValue] = useDebounce(searchKeyword, 500, { maxWait: 2000 });
@@ -87,14 +69,6 @@ const RepositoryList = () => {
       setSelectedOption={setSelectedOption}
       repositories={data.repositories}
       navigate={navigate}
-    // ListHeaderComponent={
-    //   <SearchAndSortRepositories
-    //     searchKeyword={searchKeywordValue}
-    //     setSearchKeyword={deboucedSetSearchKeyword}
-    //     selectedOption={selectedOption}
-    //     setSelectedOption={setSelectedOption}
-    //   />
-    // }
     />
   );
 };
