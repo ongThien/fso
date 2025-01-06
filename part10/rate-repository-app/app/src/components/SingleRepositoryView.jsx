@@ -11,7 +11,9 @@ import theme from "../theme";
 
 const SingleRepositoryView = () => {
   const { id } = useParams();
-  const { data, loading, error } = useRepository(id);
+  const { data, loading, error, fetchMore } = useRepository(id, 4);
+
+  const onEndReach = () => fetchMore();
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error fetching data!</Text>;
@@ -37,6 +39,8 @@ const SingleRepositoryView = () => {
       keyExtractor={({ id }) => id}
       ListHeaderComponent={() => <RepositoryInfo repository={repository} />}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      onEndReached={onEndReach}
+      onEndReachedThreshold={0.5}
     />
   );
 };

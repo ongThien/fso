@@ -32,7 +32,7 @@ export class RepositoryListContainer extends React.Component {
   };
 
   render() {
-    const { repositories, navigate } = this.props;
+    const { repositories, navigate, onEndReach } = this.props;
     const repositoryNodes = repositories ? repositories.edges.map(edge => edge.node) : [];
 
     return (
@@ -45,6 +45,8 @@ export class RepositoryListContainer extends React.Component {
             <RepositoryItem key={item.id} item={item} />
           </Pressable>
         }
+        onEndReached={onEndReach}
+        onEndReachedThreshold={0.1}
       />
     );
   }
@@ -54,8 +56,10 @@ const RepositoryList = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchKeywordValue] = useDebounce(searchKeyword, 500, { maxWait: 2000 });
   const [selectedOption, setSelectedOption] = useState(sortOptions[0]);
-  const { data, loading, error } = useRepositories(selectedOption.value, searchKeywordValue);
+  const { data, loading, error, fetchMore } = useRepositories(selectedOption.value, 2, searchKeywordValue);
   const navigate = useNavigate();
+
+  const onEndReach = () => fetchMore();
 
   if (loading) return <Text>Loading...</Text>;
 
@@ -69,6 +73,7 @@ const RepositoryList = () => {
       setSelectedOption={setSelectedOption}
       repositories={data.repositories}
       navigate={navigate}
+      onEndReach={onEndReach}
     />
   );
 };
