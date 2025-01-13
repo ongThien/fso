@@ -45,6 +45,7 @@ The repository is organized into different directories, each corresponding to a 
 ├── part8 GraphQL
 ├── part9 Typescript
 ├── part10 React Native
+├── part11 CI/CD
 └── README.md
 ```
 
